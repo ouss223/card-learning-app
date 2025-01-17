@@ -5,8 +5,8 @@ import { auth, signOut, signIn } from "@/auth";
 const Navbar = async () => {
   const session = await auth();
   return (
-<div className="px-10 py-10 bg-red-300 shadow-md font-work-sans" >
-<nav className="flex justify-between items-center ">
+    <div className="px-10 py-10 bg-red-300 shadow-md font-work-sans">
+      <nav className="flex justify-between items-center ">
         <Link href="/">
           <Image
             src="https://upload.wikimedia.org/wikipedia/en/a/a9/TikTok_logo.svg"
@@ -18,11 +18,17 @@ const Navbar = async () => {
         </Link>
         <div className="flex items-center gap-10 text-black">
           {session && session?.user ? (
-            <div>
+            <div className="flex justify-between items-center gap-10">
               <Link href="/profile">
-                <a className="">Profile</a>
+                <span>Profile</span>
               </Link>
-              <button onClick={() => signOut()} className="">
+              <button
+                onClick={async () => {
+                  "use server";
+                  await signOut();
+                }}
+                className=""
+              >
                 Sign Out
               </button>
             </div>
