@@ -22,10 +22,12 @@ const Navbar = async () => {
               <Link href="/profile">
                 <span>Profile</span>
               </Link>
+              <span>{session?.user?.name}</span>
+              
               <button
                 onClick={async () => {
                   "use server";
-                  await signOut();
+                  await signOut({redirectTo: "/"});
                 }}
                 className=""
               >
