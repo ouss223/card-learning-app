@@ -5,7 +5,7 @@ import { auth, signOut, signIn } from "@/auth";
 const Navbar = async () => {
   const session = await auth();
   return (
-    <div className="px-10 py-10 bg-red-300 shadow-md font-work-sans">
+    <div className="px-10 py-10 bg-red-100 shadow-md font-work-sans">
       <nav className="flex justify-between items-center ">
         <Link href="/">
           <Image
