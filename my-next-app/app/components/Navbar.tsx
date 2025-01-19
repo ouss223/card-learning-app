@@ -1,16 +1,19 @@
+"use client";
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { auth, signOut, signIn } from "@/auth";
-const Navbar = async () => {
-  const session = await auth();
+import { handleSignOut, handleSignIn } from "@/app/actions/authActions";
+import Notification from "./Notification"
+const Navbar = ({ session }: { session: any }) => {
+  const [notification, setNotification] = React.useState<boolean | null>(null);
+  const text = "Are you sure you want to sign out?";
   return (
-    <div className="px-10 py-10 bg-red-100 shadow-md font-work-sans">
-      <nav className="flex justify-between items-center ">
+    <div className="px-10 py-10 bg-red-200 shadow-md font-work-sans">
+      <nav className="flex justify-between items-center">
         <Link href="/">
           <Image
             src="https://upload.wikimedia.org/wikipedia/en/a/a9/TikTok_logo.svg"
-            alt="animal"
+            alt="logo"
             width={100}
             height={100}
             unoptimized
@@ -23,30 +26,18 @@ const Navbar = async () => {
                 <span>Profile</span>
               </Link>
               <span>{session?.user?.name}</span>
-              
-              <button
-                onClick={async () => {
-                  "use server";
-                  await signOut({redirectTo: "/"});
-                }}
-                className=""
-              >
+              <button onClick={()=>setNotification(true)} className="">
                 Sign Out
               </button>
             </div>
           ) : (
-            <button
-              className=""
-              onClick={async () => {
-                "use server";
-                await signIn("github");
-              }}
-            >
+            <button onClick={handleSignIn} className="">
               Login
             </button>
           )}
         </div>
       </nav>
+      {notification && <Notification func={handleSignOut} text={text} cancel={setNotification} main_action={"sign out"} />}
     </div>
   );
 };
