@@ -7,5 +7,5 @@ export const handleSignOut = async () => {
 };
 
 export const handleSignIn = async () => {
-  await signIn("github");
+  await signIn("github", { redirectTo: "/home" });
 };
