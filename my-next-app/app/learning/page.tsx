@@ -23,7 +23,7 @@ const Learning = () => {
   const [j, setj] = React.useState<number | null>(0);
   return (
     <div className="flex flex-col gap-5 mt-20 text-black justify-center items-center">
-      <h1 className="font-semibold text-4xl hover:text-6xl transition-transform duration-200">
+      <h1 className="font-semibold text-4xl ">
         arabic terms
       </h1>
       <div>
