@@ -5,7 +5,7 @@ import { auth } from "@/auth";
 
 const NavbarWrapper = async () => {
   const session = await auth();
-  return <Navbar session={session} />;
+  return <Navbar  />;
 };
 
 export default NavbarWrapper;

@@ -2,11 +2,20 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { handleSignOut, handleSignIn } from "@/app/actions/authActions";
-import Notification from "./Notification"
-const Navbar = ({ session }: { session: any }) => {
+import { signOut, signIn, useSession } from "next-auth/react";
+import Notification from "./Notification";
+
+const Navbar = () => {
   const [notification, setNotification] = React.useState<boolean | null>(null);
+  const { data: session, status } = useSession();
+
   const text = "Are you sure you want to sign out?";
+
+  // Trigger the session update after signing out
+  const handleSignOut = () => {
+    signOut({ callbackUrl: "/" }); // Redirect to home page after sign-out
+  };
+
   return (
     <div className="px-10 py-10 bg-red-200 shadow-md font-work-sans">
       <nav className="flex justify-between items-center">
@@ -26,18 +35,23 @@ const Navbar = ({ session }: { session: any }) => {
                 <span>Profile</span>
               </Link>
               <span>{session?.user?.name}</span>
-              <button onClick={()=>setNotification(true)} className="">
-                Sign Out
-              </button>
+              <button onClick={() => setNotification(true)}>Sign Out</button>
             </div>
           ) : (
-            <button onClick={handleSignIn} className="">
+            <button onClick={() => signIn()} className="">
               Login
             </button>
           )}
         </div>
       </nav>
-      {notification && <Notification func={handleSignOut} text={text} cancel={setNotification} main_action={"sign out"} />}
+      {notification && (
+        <Notification
+          func={handleSignOut}
+          text={text}
+          cancel={setNotification}
+          main_action={"sign out"}
+        />
+      )}
     </div>
   );
 };
