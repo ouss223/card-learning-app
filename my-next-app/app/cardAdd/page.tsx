@@ -5,6 +5,8 @@ import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import { Field, Label, Switch } from "@headlessui/react";
 import CardAddmini from "../components/cardAddmini";
 import { PlusIcon } from "@heroicons/react/16/solid";
+import { useSession } from "next-auth/react";
+
 export default function Example() {
   const [agreed, setAgreed] = useState(false);
   const [i, seti] = useState(1);
@@ -12,14 +14,17 @@ export default function Example() {
   const [title, setTitle] = useState("");
   const [targetLanguage, setTargetLanguage] = useState("");
   const [description, setDescription] = useState("");
+  const { data: session } = useSession();
+
   useEffect(() => {
     console.log(words);
   }, [words]);
   const handleSubmit = async (e) => {
-    e.preventDefault(); 
-    const temp_userid = 1;
+    e.preventDefault();
+    const email = session.user.email;
 
     const cardData = {
+      email,
       title,
       targetLanguage,
       description,

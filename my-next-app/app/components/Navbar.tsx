@@ -4,17 +4,23 @@ import Link from "next/link";
 import Image from "next/image";
 import { signOut, signIn, useSession } from "next-auth/react";
 import Notification from "./Notification";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
   const [notification, setNotification] = React.useState<boolean | null>(null);
   const { data: session, status } = useSession();
 
   const text = "Are you sure you want to sign out?";
+  const router = useRouter();
 
   // Trigger the session update after signing out
   const handleSignOut = () => {
     signOut({ callbackUrl: "/" }); // Redirect to home page after sign-out
   };
+  const handleSignIn = async () => {
+    const result = await signIn("github", { callbackUrl: "/callback" });
+  };
+  
 
   return (
     <div className="px-10 py-10 bg-red-200 shadow-md font-work-sans">
@@ -38,7 +44,7 @@ const Navbar = () => {
               <button onClick={() => setNotification(true)}>Sign Out</button>
             </div>
           ) : (
-            <button onClick={() => signIn()} className="">
+            <button onClick={handleSignIn} className="">
               Login
             </button>
           )}
