@@ -1,6 +1,16 @@
 import React from "react";
 
-const cardAddmini = () => {
+const CardAddmini = ({ index, words, setWords }) => {
+  const handleInputChange = (e, type) => {
+    const updatedWords = [...words];
+    if (type === "word") {
+      updatedWords[index][0] = e.target.value; 
+    } else if (type === "translatedWord") {
+      updatedWords[index][1] = e.target.value; 
+    }
+    setWords(updatedWords); 
+  };
+
   return (
     <div className="flex gap-x-4 sm:col-span-2 mt-8 items-center justify-center">
       <div className="flex flex-col h-20 justify-center items-center">
@@ -13,6 +23,8 @@ const cardAddmini = () => {
             name="first-name"
             type="text"
             autoComplete="given-name"
+            value={words[index]?.[0] || ""} 
+            onChange={(e) => handleInputChange(e, "word")}
             className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600"
           />
         </div>
@@ -27,6 +39,8 @@ const cardAddmini = () => {
             name="last-name"
             type="text"
             autoComplete="family-name"
+            value={words[index]?.[1] || ""} 
+            onChange={(e) => handleInputChange(e, "translatedWord")}
             className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600"
           />
         </div>
@@ -35,4 +49,4 @@ const cardAddmini = () => {
   );
 };
 
-export default cardAddmini;
+export default CardAddmini;

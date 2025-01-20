@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import { Field, Label, Switch } from "@headlessui/react";
 import CardAddmini from "../components/cardAddmini";
@@ -9,6 +9,12 @@ export default function Example() {
   const [agreed, setAgreed] = useState(false);
   const [i, seti] = useState(1);
   const [words, setWords] = useState([["", ""]]);
+  const [title, setTitle] = useState("");
+  const [targetLanguage, setTargetLanguage] = useState("");
+  const [description, setDescription] = useState("");
+  useEffect(() => {
+    console.log(words);
+  }, [words]);
 
   return (
     <div className="   bg-white px-6 py-24 sm:py-32 lg:px-8 h-full">
@@ -47,6 +53,8 @@ export default function Example() {
             </label>
             <div className="mt-2.5">
               <input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
                 id="company"
                 name="company"
                 type="text"
@@ -64,6 +72,8 @@ export default function Example() {
             </label>
             <div className="mt-2.5">
               <input
+                value={targetLanguage}
+                onChange={(e) => setTargetLanguage(e.target.value)}
                 id="email"
                 name="email"
                 type="email"
@@ -82,6 +92,8 @@ export default function Example() {
             </label>
             <div className="mt-2.5">
               <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
                 id="message"
                 name="message"
                 rows={4}
@@ -116,7 +128,7 @@ export default function Example() {
         <div>
           {Array.from({ length: i }, (_, j) => (
             <div key={j}>
-              <CardAddmini />
+              <CardAddmini index={j} words={words} setWords={setWords} />
             </div>
           ))}
         </div>
@@ -124,6 +136,7 @@ export default function Example() {
           <button
             onClick={() => {
               seti(i + 1);
+              setWords([...words, ["", ""]]);
             }}
             type="button"
             className="block w-1/8 rounded-full bg-indigo-600 px-3 py-1.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
