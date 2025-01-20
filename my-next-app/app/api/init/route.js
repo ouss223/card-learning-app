@@ -37,7 +37,6 @@ export async function GET(req) {
   ];
   
 
-  // Execute queries
   for (const query of queries) {
     db.query(query, (err) => {
       if (err) {

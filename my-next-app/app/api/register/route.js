@@ -1,7 +1,6 @@
 import db from "../../../lib/db";
 import { NextResponse } from 'next/server';
 
-// API Route: /api/registerUser
 export async function POST(request) {
   try {
     const { email, username } = await request.json();

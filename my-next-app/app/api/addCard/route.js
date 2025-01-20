@@ -3,9 +3,7 @@ import db from '../../../lib/db';
 
 export async function POST(request) {
     try {
-        const { title, targetLanguage, description, words } = await request.json();
-        const userId = 1;
-        console.log(userId, title, targetLanguage, description, words);
+        const {email, title, targetLanguage, description, words } = await request.json();
 
         const cardData = {
             title,
@@ -13,6 +11,15 @@ export async function POST(request) {
             description,
             words,
         };
+        const getuserIdquery = "SELECT id FROM users WHERE email = ?";
+        const userId = await new Promise((resolve, reject) => {
+            db.query(getuserIdquery, [email], (err, result) => {
+                if (err) reject(err);
+                else resolve(result[0].id);
+            });
+        }
+        );
+
 
         const insertCardQuery = `
             INSERT INTO cards (title, target_language, description, user_id)
@@ -20,7 +27,6 @@ export async function POST(request) {
         `;
         console.log("here comes");
 
-        // Insert the card and get the card ID
         const cardResult = await new Promise((resolve, reject) => {
             db.query(insertCardQuery, [title, targetLanguage, description, userId], (err, result) => {
                 if (err) reject(err);
@@ -32,7 +38,6 @@ export async function POST(request) {
         const cardId = cardResult.insertId;
         console.log("card ID: ", cardId);
 
-        // Ensure 'words' is an array of strings and insert them one by one
         if (Array.isArray(words)) {
             for (let word_tuple of words) {
                 if (typeof word_tuple[0] === 'string') {
@@ -47,7 +52,6 @@ export async function POST(request) {
                         });
                     });
 
-                    // Insert translated words into the `translated_words` table
                     if (typeof word_tuple[1] === 'string') {
                         const insertTranslatedWordQuery = `
                             INSERT INTO translated_words (translated_word, word_id)

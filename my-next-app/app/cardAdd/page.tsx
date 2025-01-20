@@ -19,9 +19,9 @@ export default function Example() {
   useEffect(() => {
     console.log(words);
   }, [words]);
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const email = session.user.email;
+    const email = session?.user?.email;
 
     const cardData = {
       email,

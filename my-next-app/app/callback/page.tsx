@@ -1,6 +1,6 @@
 "use client";
 import { useEffect } from "react";
-import { useRouter } from "next/navigation"; // Use 'next/router' for routing in Next.js 13
+import { useRouter } from "next/navigation"; 
 import { useSession } from "next-auth/react";
 
 const CallbackPage = () => {
@@ -10,17 +10,16 @@ const CallbackPage = () => {
   useEffect(() => {
     if (session) {
       console.log("User session:", session.user?.email);
-      // Call your registration API once session is available
       const registerUser = async () => {
         try {
           const response = await fetch("/api/register", {
-            method: "POST", // Ensure you're using POST
+            method: "POST", 
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              email: session.user.email,
-              username: session.user.name,
+              email: session?.user?.email,
+              username: session?.user?.name,
             }),
           });
 
@@ -28,7 +27,6 @@ const CallbackPage = () => {
             const data = await response.json();
             console.log("User registered successfully:", data);
 
-            // Redirect to home page after successful registration
             
           } else {
             console.error("Registration failed:", await response.text());

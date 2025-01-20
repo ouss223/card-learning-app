@@ -13,9 +13,8 @@ const Navbar = () => {
   const text = "Are you sure you want to sign out?";
   const router = useRouter();
 
-  // Trigger the session update after signing out
   const handleSignOut = () => {
-    signOut({ callbackUrl: "/" }); // Redirect to home page after sign-out
+    signOut({ callbackUrl: "/" }); 
   };
   const handleSignIn = async () => {
     const result = await signIn("github", { callbackUrl: "/callback" });
