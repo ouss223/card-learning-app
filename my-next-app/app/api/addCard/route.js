@@ -20,7 +20,7 @@ export async function POST(request) {
         `;
         console.log("here comes");
 
-        // Insert the card and get the card ID using Promises
+        // Insert the card and get the card ID
         const cardResult = await new Promise((resolve, reject) => {
             db.query(insertCardQuery, [title, targetLanguage, description, userId], (err, result) => {
                 if (err) reject(err);
@@ -34,20 +34,34 @@ export async function POST(request) {
 
         // Ensure 'words' is an array of strings and insert them one by one
         if (Array.isArray(words)) {
-            for (let word of words) {
-                if (typeof word === 'string') {
+            for (let word_tuple of words) {
+                if (typeof word_tuple[0] === 'string') {
                     const insertWordQuery = `
                         INSERT INTO words (word, card_id)
                         VALUES (?, ?)
                     `;
-                    await new Promise((resolve, reject) => {
-                        db.query(insertWordQuery, [word, cardId], (err, result) => {
+                    const wordResult = await new Promise((resolve, reject) => {
+                        db.query(insertWordQuery, [word_tuple[0], cardId], (err, result) => {
                             if (err) reject(err);
                             else resolve(result);
                         });
                     });
+
+                    // Insert translated words into the `translated_words` table
+                    if (typeof word_tuple[1] === 'string') {
+                        const insertTranslatedWordQuery = `
+                            INSERT INTO translated_words (translated_word, word_id)
+                            VALUES (?, ?)
+                        `;
+                        await new Promise((resolve, reject) => {
+                            db.query(insertTranslatedWordQuery, [word_tuple[1], wordResult.insertId], (err, result) => {
+                                if (err) reject(err);
+                                else resolve(result);
+                            });
+                        });
+                    }
                 } else {
-                    console.error("Invalid word type:", word);
+                    console.error("Invalid word type:", word_tuple[0]);
                 }
             }
         }
