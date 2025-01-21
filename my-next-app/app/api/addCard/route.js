@@ -22,13 +22,14 @@ export async function POST(request) {
 
 
         const insertCardQuery = `
-            INSERT INTO cards (title, target_language, description, user_id)
-            VALUES (?, ?, ?, ?)
+            INSERT INTO cards (title, target_language, description, user_id,total_words)
+            VALUES (?, ?, ?, ?,?)
         `;
         console.log("here comes");
+        const total_words = words.length;
 
         const cardResult = await new Promise((resolve, reject) => {
-            db.query(insertCardQuery, [title, targetLanguage, description, userId], (err, result) => {
+            db.query(insertCardQuery, [title, targetLanguage, description, userId,total_words], (err, result) => {
                 if (err) reject(err);
                 else resolve(result);
             });

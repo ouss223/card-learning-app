@@ -6,7 +6,7 @@ import { Field, Label, Switch } from "@headlessui/react";
 import CardAddmini from "../components/cardAddmini";
 import { PlusIcon } from "@heroicons/react/16/solid";
 import { useSession } from "next-auth/react";
-
+import { useRouter } from "next/navigation";
 export default function Example() {
   const [agreed, setAgreed] = useState(false);
   const [i, seti] = useState(1);
@@ -15,6 +15,7 @@ export default function Example() {
   const [targetLanguage, setTargetLanguage] = useState("");
   const [description, setDescription] = useState("");
   const { data: session } = useSession();
+  const Router = useRouter();
 
   useEffect(() => {
     console.log(words);
@@ -42,6 +43,7 @@ export default function Example() {
 
       if (response.ok) {
         console.log("Card added successfully");
+        Router.push("/home");
       } else {
         console.error("Failed to add card");
       }
