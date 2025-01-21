@@ -1,6 +1,7 @@
 import { title } from 'process';
 import db from '../../../../lib/db';
 import { NextResponse } from 'next/server';
+import { Description } from '@headlessui/react';
 
 export async function GET(request, { params }) {
   const { id } = params;
@@ -58,6 +59,7 @@ export async function GET(request, { params }) {
       message: 'Card retrieved successfully',
       cardData: wordPairs ,
       title: card.title,
+      description : card.description
     });
 
   } catch (error) {
