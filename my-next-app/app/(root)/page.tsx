@@ -8,6 +8,8 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 import Link from '@mui/material/Link';
+import { redirect } from 'next/navigation';
+import { useSession } from "next-auth/react";
 
 const posts = [
   {
@@ -88,6 +90,11 @@ const StyledBox = styled('div')(({ theme }) => ({
 }));
 
 export default function Hero() {
+  const { data: session } = useSession();
+  
+    if (session) {
+      redirect('/home');
+    }
   return (
     <>
       <Box
