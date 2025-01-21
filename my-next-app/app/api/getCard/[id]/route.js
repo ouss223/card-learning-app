@@ -1,3 +1,4 @@
+import { title } from 'process';
 import db from '../../../../lib/db';
 import { NextResponse } from 'next/server';
 
@@ -49,13 +50,14 @@ export async function GET(request, { params }) {
       });
 
       translations.forEach(translation => {
-        wordPairs.push([word.word_text, translation.translated_text]);
+        wordPairs.push([word.word, translation.translated_word]);
       });
     }
 
     return NextResponse.json({
       message: 'Card retrieved successfully',
-      cardData: wordPairs 
+      cardData: wordPairs ,
+      title: card.title,
     });
 
   } catch (error) {
