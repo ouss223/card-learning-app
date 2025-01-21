@@ -4,48 +4,121 @@ import React from "react";
 import { PaperClipIcon } from '@heroicons/react/20/solid';
 import { useSession } from "next-auth/react";
 
-export default function Example() {
+export default function Profile() {
   const { data: session } = useSession();
 
   if (!session) {
-    return <div>Loading...</div>;
+    return <div className="text-gray-300">Loading...</div>;
   }
 
-  // show stats with an api created later
-
   return (
-    <div>
-      <div className="px-4 sm:px-0">
-        <h3 className="text-base/7 font-semibold text-gray-900">Applicant Information</h3>
-        <p className="mt-1 max-w-2xl text-sm/6 text-gray-500">Personal details and application.</p>
+    <div 
+      className=" p-8 w-full h-screen pt-20"
+      style={{
+        background: 'linear-gradient(145deg, #1e2b3a 0%, #2a3f54 100%)',
+        boxShadow: '0 8px 24px rgba(0,0,0,0.15)'
+      }}
+    >
+      <div className="px-4 sm:px-0 mb-8">
+        <h3 
+          className="text-2xl font-bold"
+          style={{ color: '#7fcac9' }}
+        >
+          User Profile
+        </h3>
+        <p 
+          className="mt-2 text-sm opacity-80"
+          style={{ color: 'rgba(255,255,255,0.7)' }}
+        >
+          Personal details and account information
+        </p>
       </div>
-      <div className="mt-6 border-t border-gray-100">
-        <dl className="divide-y divide-gray-100">
+      
+      <div 
+        className="mt-6 border-t"
+        style={{ borderColor: 'rgba(127,202,201,0.1)' }}
+      >
+        <dl className="" style={{ borderColor: 'rgba(127,202,201,0.1)' }}>
+          {[
+            { label: 'Full name', value: session.user?.name },
+            { label: 'Username', value: 'LangLearner123' },
+            { label: 'Email address', value: session.user?.email },
+            { label: 'Learning Streak', value: '14 days' },
+            { label: 'Total Cards Mastered', value: '237' },
+          ].map((item, idx) => (
+            <div 
+              key={idx}
+              className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0 hover:bg-white/5 transition-colors rounded-lg"
+            >
+              <dt 
+                className="text-sm font-medium"
+                style={{ color: 'rgba(255,255,255,0.8)' }}
+              >
+                {item.label}
+              </dt>
+              <dd 
+                className="mt-1 text-sm sm:col-span-2 sm:mt-0"
+                style={{ color: '#7fcac9' }}
+              >
+                {item.value}
+              </dd>
+            </div>
+          ))}
+
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-            <dt className="text-sm/6 font-medium text-gray-900">Full name</dt>
-            <dd className="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">{session?.user?.name}</dd>
-          </div>
-          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-            <dt className="text-sm/6 font-medium text-gray-900">nickname</dt>
-            <dd className="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">Backend Developer</dd>
-          </div>
-          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-            <dt className="text-sm/6 font-medium text-gray-900">Email address</dt>
-            <dd className="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">{session?.user?.email}</dd>
-          </div>
-          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-            <dt className="text-sm/6 font-medium text-gray-900">Salary expectation</dt>
-            <dd className="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">$120,000</dd>
-          </div>
-          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-            <dt className="text-sm/6 font-medium text-gray-900">About</dt>
-            <dd className="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
-              Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim incididunt cillum culpa consequat. Excepteur
-              qui ipsum aliquip consequat sint. Sit id mollit nulla mollit nostrud in ea officia proident. Irure nostrud
-              pariatur mollit ad adipisicing reprehenderit deserunt qui eu.
+            <dt 
+              className="text-sm font-medium"
+              style={{ color: 'rgba(255,255,255,0.8)' }}
+            >
+              Bio
+            </dt>
+            <dd 
+              className="mt-1 text-sm sm:col-span-2 sm:mt-0"
+              style={{ color: 'rgba(255,255,255,0.7)' }}
+            >
+              <div className="space-y-4">
+                <p>
+                  Passionate language learner currently mastering Spanish and dabbling in Japanese. 
+                  Created 15 custom card sets with over 500 words. Daily streak maintained for 2 weeks!
+                </p>
+                <div className="flex items-center gap-2 text-sm">
+                  <PaperClipIcon 
+                    className="h-5 w-5 flex-none"
+                    style={{ color: '#7fcac9' }}
+                  />
+                  <span style={{ color: '#7fcac9' }}>
+                    lang_learner_achievements.pdf
+                  </span>
+                </div>
+              </div>
             </dd>
           </div>
         </dl>
+      </div>
+
+      <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
+        {[
+          { label: 'Daily Streak', value: '14', unit: 'days' },
+          { label: 'Active Cards', value: '58', unit: 'cards' },
+          { label: 'Accuracy', value: '92', unit: '%' },
+          { label: 'XP Earned', value: '4.8k', unit: 'xp' },
+        ].map((stat, idx) => (
+          <div 
+            key={idx}
+            className="p-4 rounded-lg text-center"
+            style={{
+              background: 'rgba(127,202,201,0.1)',
+              border: '1px solid rgba(127,202,201,0.2)'
+            }}
+          >
+            <div style={{ color: '#7fcac9' }} className="text-2xl font-bold">
+              {stat.value}
+            </div>
+            <div style={{ color: 'rgba(255,255,255,0.7)' }} className="text-sm mt-1">
+              {stat.label}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
