@@ -8,24 +8,24 @@ import { useRouter } from "next/navigation";
 export default function Example() {
   const [isHovered, setIsHovered] = React.useState(false);
   const [email, setEmail] = React.useState("");
-   const [password, setPassword] = React.useState("");
+  const [password, setPassword] = React.useState("");
   const handleSignInGithub = async () => {
     const result = await signIn("github", { callbackUrl: "/callback" });
   };
-    const handleSignIn = async (e) => {
-
-        const result = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-        });
-        if (result?.error) {
-            console.error("Login failed:", result.error);
-          } else {
-            window.location.href = "/";
-          }
-    };
-
+  const handleSignIn = async (e) => {
+    e.preventDefault();
+    const result = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
+    if (result?.error) {
+      console.error("Login failed:", result.error);
+    } else {
+    console.log(result);
+      alert("Login successful ?");
+    }
+  };
 
   return (
     <>
@@ -43,7 +43,7 @@ export default function Example() {
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form action={handleSignIn}  className="space-y-6">
+          <form onSubmit={handleSignIn} className="space-y-6">
             <div>
               <label
                 htmlFor="email"
@@ -56,6 +56,8 @@ export default function Example() {
                   id="email"
                   name="email"
                   type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                   autoComplete="email"
                   className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -82,6 +84,8 @@ export default function Example() {
               </div>
               <div className="mt-2">
                 <input
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   id="password"
                   name="password"
                   type="password"
@@ -104,7 +108,7 @@ export default function Example() {
 
           <div className="border-t mt-10 text-gray-400    border-black  pt-10 text-gray-900 flex justify-center items-center">
             <button
-                onClick={handleSignInGithub}
+              onClick={handleSignInGithub}
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
               style={{
