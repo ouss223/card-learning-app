@@ -1,7 +1,31 @@
 "use client";
 import React from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { signOut, signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+
 export default function Example() {
   const [isHovered, setIsHovered] = React.useState(false);
+  const [email, setEmail] = React.useState("");
+   const [password, setPassword] = React.useState("");
+  const handleSignInGithub = async () => {
+    const result = await signIn("github", { callbackUrl: "/callback" });
+  };
+    const handleSignIn = async (e) => {
+
+        const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+        });
+        if (result?.error) {
+            console.error("Login failed:", result.error);
+          } else {
+            window.location.href = "/";
+          }
+    };
+
 
   return (
     <>
@@ -19,7 +43,7 @@ export default function Example() {
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form action="#" method="POST" className="space-y-6">
+          <form action={handleSignIn}  className="space-y-6">
             <div>
               <label
                 htmlFor="email"
@@ -80,6 +104,7 @@ export default function Example() {
 
           <div className="border-t mt-10 text-gray-400    border-black  pt-10 text-gray-900 flex justify-center items-center">
             <button
+                onClick={handleSignInGithub}
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
               style={{

@@ -17,31 +17,34 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
+        console.log("hahahahahaha")
         try {
-          const [rows] = await db.query(
-            `SELECT * FROM users WHERE email = ?`,  // Changed to MySQL placeholder
+          const result = await db.queryAsync(
+            `SELECT * FROM users WHERE email = ?`,
             [credentials.email]
           );
-
-          if (rows.length === 0) return null;
-          const user = rows[0];
-
+      
+          const user = result[0];
+          if (!user) return null;
+      
           if (user.password_hash) {
             const isValid = await compare(credentials.password, user.password_hash);
+            console.log('Password valid?', isValid); // Should be true/false
             if (!isValid) return null;
           }
-
+      
           return {
             id: user.id.toString(),
             email: user.email,
-            name: user.username,  // Changed from user.name
-            image: user.image
+            name: user.username,
+            image: user.image || null
           };
         } catch (error) {
           console.error("Authorization error:", error);
           return null;
         }
       }
+      
     })
   ],
   callbacks: {
@@ -55,8 +58,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async session({ session, token }) {
       if (token?.id) {
         try {
-          const [rows] = await db.query(
-            `SELECT email, username, image FROM users WHERE id = ?`,  // Changed to MySQL placeholder
+          const rows = await db.queryAsync(
+            `SELECT email, username, image FROM users WHERE id = ?`, 
             [token.id]
           );
           
@@ -65,7 +68,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               ...session.user,
               ...rows[0],
               id: token.id,
-              name: rows[0].username  // Map username to name
+              name: rows[0].username 
             };
           }
         } catch (error) {

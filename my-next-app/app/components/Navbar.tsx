@@ -16,9 +16,7 @@ const Navbar = () => {
   const handleSignOut = () => {
     signOut({ callbackUrl: "/" }); 
   };
-  const handleSignIn = async () => {
-    const result = await signIn("github", { callbackUrl: "/callback" });
-  };
+  
   
 
   return (
@@ -43,7 +41,9 @@ const Navbar = () => {
               <button onClick={() => setNotification(true)}>Sign Out</button>
             </div>
           ) : (
-            <button onClick={handleSignIn} className="">
+            <button onClick={()=>{
+              router.push("/login");
+            }} className="">
               Login
             </button>
           )}
