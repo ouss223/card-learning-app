@@ -39,7 +39,7 @@ const Learning = () => {
 
   return (
     <div 
-      className="flex flex-col gap-5 min-h-screen p-8 justify-center items-center"
+      className="flex flex-col gap-5 min-h-screen pt-28 items-center"
       style={{
         background: 'linear-gradient(145deg, #1e2b3a 0%, #2a3f54 100%)',
         color: '#ffffff'
