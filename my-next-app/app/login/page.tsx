@@ -1,4 +1,8 @@
+"use client";
+import React from "react";
 export default function Example() {
+  const [isHovered, setIsHovered] = React.useState(false);
+
   return (
     <>
       `
@@ -74,8 +78,30 @@ export default function Example() {
             </div>
           </form>
 
-          <div className="border-t mt-10    border-black  pt-10 text-gray-900 flex justify-center items-center">
-            <button className="flex w-full transform hover:bg-black  gap-8 items-center px-4 py-2 rounded-lg  text-xl border">
+          <div className="border-t mt-10 text-gray-400    border-black  pt-10 text-gray-900 flex justify-center items-center">
+            <button
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+              style={{
+                backgroundColor: isHovered ? "#9ca3af" : "white",
+                color: "#111827",
+                border: "1px solid #e5e7eb",
+                padding: "0.375rem 0.75rem",
+                borderRadius: "0.375rem",
+                fontSize: "0.875rem",
+                fontWeight: 600,
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                width: "100%",
+                transition: "all 0.2s ease",
+                cursor: "pointer",
+                boxShadow: isHovered
+                  ? "0 1px 2px 0 rgba(0, 0, 0, 0.05)"
+                  : "none",
+              }}
+            >
+              {" "}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 x="0px"
