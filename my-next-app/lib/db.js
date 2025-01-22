@@ -1,13 +1,24 @@
+// lib/db.js
 const mysql = require('mysql');
 
-const connection = mysql.createConnection({
+const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: '', // Replace with your database password
-  database: 'cardApp',
+  password: '',
+  database: 'cardApp'
 });
 
-connection.connect((err) => {
+// Promisify the query function
+db.queryAsync = (sql, values) => {
+  return new Promise((resolve, reject) => {
+    db.query(sql, values, (err, results) => {
+      if (err) reject(err);
+      else resolve(results);
+    });
+  });
+};
+
+db.connect((err) => {
   if (err) {
     console.error('Database connection failed:', err);
     return;
@@ -15,4 +26,4 @@ connection.connect((err) => {
   console.log('Connected to the database');
 });
 
-module.exports = connection;
+module.exports = db;

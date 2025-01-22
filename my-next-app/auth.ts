@@ -1,12 +1,15 @@
 import NextAuth from "next-auth";
 import GitHub from "next-auth/providers/github";
 import Credentials from "next-auth/providers/credentials";
-import db from "./lib/db"; 
-import { hash, compare } from "bcryptjs";
+import db from "./lib/db";
+import { compare } from "bcryptjs";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
-    GitHub,
+    GitHub({
+      clientId: process.env.GITHUB_ID,
+      clientSecret: process.env.GITHUB_SECRET,
+    }),
     Credentials({
       name: "Credentials",
       credentials: {
@@ -14,33 +17,29 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        const client = await db.connect();
         try {
-          // 1. Check if user exists
-          const { rows } = await client.query(
-            `SELECT * FROM users WHERE email = $1`,
+          const [rows] = await db.query(
+            `SELECT * FROM users WHERE email = ?`,  // Changed to MySQL placeholder
             [credentials.email]
           );
 
           if (rows.length === 0) return null;
-
           const user = rows[0];
-          
-          // 2. Verify password for email/password users
+
           if (user.password_hash) {
             const isValid = await compare(credentials.password, user.password_hash);
             if (!isValid) return null;
           }
 
-          // 3. Return user object
           return {
-            id: user.id,
+            id: user.id.toString(),
             email: user.email,
-            name: user.name,
+            name: user.username,  // Changed from user.name
             image: user.image
           };
-        } finally {
-          client.release();
+        } catch (error) {
+          console.error("Authorization error:", error);
+          return null;
         }
       }
     })
@@ -55,15 +54,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     async session({ session, token }) {
       if (token?.id) {
-        const client = await db.connect();
         try {
-          const { rows } = await client.query(
-            `SELECT email, name, image FROM users WHERE id = $1`,
+          const [rows] = await db.query(
+            `SELECT email, username, image FROM users WHERE id = ?`,  // Changed to MySQL placeholder
             [token.id]
           );
-          session.user = { ...session.user, ...rows[0] };
-        } finally {
-          client.release();
+          
+          if (rows.length > 0) {
+            session.user = {
+              ...session.user,
+              ...rows[0],
+              id: token.id,
+              name: rows[0].username  // Map username to name
+            };
+          }
+        } catch (error) {
+          console.error("Session error:", error);
         }
       }
       return session;
@@ -72,5 +78,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   pages: {
     signIn: "/login",
     error: "/auth/error"
-  }
+  },
+  session: {
+    strategy: "jwt"
+  },
+  secret: process.env.AUTH_SECRET
 });

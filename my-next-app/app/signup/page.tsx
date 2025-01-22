@@ -1,8 +1,45 @@
 "use client";
-import React from "react";
+import { useEffect, useState } from "react";
 import { PhotoIcon, UserCircleIcon } from "@heroicons/react/24/solid";
 
 export default function Example() {
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [photopreview, setPhotoPreview] = useState("");
+  const [photoFile, setPhotoFile] = useState(null);
+
+  const handleSubmit = async (e) => {
+
+    const formData = new FormData();
+    formData.append('email', email);
+    formData.append('username', username);
+    formData.append('password', password);
+    if (photoFile) {
+      formData.append('photo', photoFile);
+    }
+
+    try {
+      const res = await fetch("/api/signup", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to sign up");
+      }
+
+      const data = await res.json();
+      console.log("Signup successful:", data);
+      alert("Signup successful! You can now log in.");
+      // Optionally redirect the user
+    } catch (error) {
+      console.error("Fetch error:", error);
+      alert(error.message);
+    }
+  };
+
   return (
     <>
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
@@ -18,7 +55,7 @@ export default function Example() {
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form action="#" method="POST" className="space-y-6">
+          <form action={handleSubmit} method="POST" className="space-y-6">
             <div>
               <label
                 htmlFor="email"
@@ -30,6 +67,8 @@ export default function Example() {
                 <input
                   id="email"
                   name="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   type="email"
                   required
                   autoComplete="email"
@@ -42,35 +81,68 @@ export default function Example() {
                 htmlFor="photo"
                 className="block text-sm/6 font-medium text-gray-900"
               >
-                Photo
+                Profile Photo
               </label>
               <div className="mt-2 flex items-center gap-x-3">
-                <UserCircleIcon
-                  aria-hidden="true"
-                  className="size-12 text-gray-300"
-                />
-                <button
-                  type="button"
-                  className="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                {photopreview ? (
+                  <img
+                    src={photopreview}
+                    alt="Profile"
+                    className="size-12 rounded-full object-cover"
+                  />
+                ) : (
+                    <UserCircleIcon
+                    aria-hidden="true"
+                    className="size-12 text-gray-300"
+                  />
+                )}
+
+                <label
+                  htmlFor="photo"
+                  className="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 cursor-pointer"
                 >
                   Change
-                </button>
+                  <input
+                    id="photo"
+                    name="photo"
+                    type="file"
+                    accept="image/*"
+                    className="sr-only" 
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setPhotoFile(file); // Store file object in state
+                        // Preview logic if needed
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                          if (event.target?.result) {
+                            setPhotoPreview(event.target.result.toString());
+                          }
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                  />
+                </label>
               </div>
             </div>
-            
-            <div className="sm:col-span-4">
-              <label htmlFor="username" className="block text-sm/6 font-medium text-gray-900">
-                Username
+            <div>
+              <label
+                htmlFor="username"
+                className="block text-sm/6 font-medium text-gray-900"
+              >
+                username
               </label>
               <div className="mt-2">
-                <div className="flex items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 outline-gray-300 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
-                  <input
-                    id="username"
-                    name="username"
-                    type="text"
-                    className="block min-w-0 grow py-1.5 pl-1 pr-3 text-base text-gray-900 placeholder:text-gray-400 focus:outline focus:outline-0 sm:text-sm/6"
-                  />
-                </div>
+                <input
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  id="username"
+                  name="username"
+                  type="username"
+                  required
+                  className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                />
               </div>
             </div>
 
@@ -82,18 +154,12 @@ export default function Example() {
                 >
                   Password
                 </label>
-                <div className="text-sm">
-                  <a
-                    href="#"
-                    className="font-semibold text-indigo-600 hover:text-indigo-500"
-                  >
-                    Forgot password?
-                  </a>
-                </div>
               </div>
               <div className="mt-2">
                 <input
                   id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   name="password"
                   type="password"
                   required
@@ -114,12 +180,12 @@ export default function Example() {
           </form>
 
           <p className="mt-10 text-center text-sm/6 text-gray-500">
-            Not a member?{" "}
+            Already have an account?{" "}
             <a
               href="#"
               className="font-semibold text-indigo-600 hover:text-indigo-500"
             >
-              Start a 14 day free trial
+              Log in here
             </a>
           </p>
         </div>

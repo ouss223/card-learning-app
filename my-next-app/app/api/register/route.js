@@ -32,4 +32,5 @@ export async function POST(request) {
     console.error("Error in POST request:", error);
     return NextResponse.json({ message: "Error registering user", error: error.message });
   }
+  
 }
