@@ -13,7 +13,7 @@ interface CardProps {
   };
 }
 
-const Card: React.FC<CardProps> = ({ data,isfavorited,setCards }) => {
+const Card: React.FC<CardProps> = ({ data, isfavorited, setCards }) => {
   const [isFavorited, setIsFavorited] = useState(isfavorited);
   const { data: session } = useSession();
   useEffect(() => {
@@ -21,10 +21,9 @@ const Card: React.FC<CardProps> = ({ data,isfavorited,setCards }) => {
   }, [isfavorited]);
 
   const handleClick = async () => {
-    if(isFavorited==true)
-    {
+    if (isFavorited == true) {
       setCards((prev) => {
-        console.log("prev",prev)
+        console.log("prev", prev);
         return prev.filter((card) => card.id !== data.id);
       });
     }
@@ -133,7 +132,7 @@ const Card: React.FC<CardProps> = ({ data,isfavorited,setCards }) => {
           <img
             width={40}
             height={40}
-            src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Hellenic_pond_turtle_%28Emys_orbicularis_hellenica%29_Butrint.jpg"
+            src={data.owner.image}
             alt="Avatar"
             style={{
               borderRadius: "50%",
@@ -158,7 +157,7 @@ const Card: React.FC<CardProps> = ({ data,isfavorited,setCards }) => {
                 fontWeight: 500,
               }}
             >
-              Language Expert
+              {data.owner.username}
             </span>
           </div>
         </div>

@@ -35,6 +35,26 @@ export async function GET(request, { params }) {
       });
       cards.push(card[0]);
     }
+    const userIds = cards.map((card) => card.user_id);
+    const getOwnersQuery = `
+        SELECT * FROM users WHERE id IN (?)
+    `;
+    const owners = await new Promise((resolve, reject) => {
+      db.query(getOwnersQuery, [userIds], (err, result) => {
+        if (err) reject(err);
+        else resolve(result);
+      });
+    });
+
+    const ownersMap = owners.reduce((map, owner) => {
+      map[owner.id] = owner;
+      return map;
+    }, {});
+
+    for (const card of cards) {
+      card.owner = ownersMap[card.user_id];
+    }
+
     return NextResponse.json({
       message: "favorites retrieved successfully",
       favorites: array,

@@ -24,6 +24,7 @@ export async function GET(request, { params }) {
         { status: 404 }
       );
     }
+    
 
     const words = await new Promise((resolve, reject) => {
       db.query(
@@ -35,6 +36,7 @@ export async function GET(request, { params }) {
         }
       );
     });
+    
 
     const wordPairs = [];
     
