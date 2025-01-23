@@ -13,9 +13,12 @@ interface CardProps {
   };
 }
 
-const Card: React.FC<CardProps> = ({ data }) => {
-  const [isFavorited, setIsFavorited] = useState(false);
+const Card: React.FC<CardProps> = ({ data,isfavorited }) => {
+  const [isFavorited, setIsFavorited] = useState(isfavorited);
   const { data: session } = useSession();
+  useEffect(() => {
+    setIsFavorited(isfavorited);
+  }, [isfavorited]);
 
   const handleClick = async () => {
     const newIsFavorited = !isFavorited;
