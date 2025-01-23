@@ -13,7 +13,7 @@ interface CardProps {
   };
 }
 
-const Card: React.FC<CardProps> = ({ data,isfavorited }) => {
+const Card: React.FC<CardProps> = ({ data,isfavorited,setCards }) => {
   const [isFavorited, setIsFavorited] = useState(isfavorited);
   const { data: session } = useSession();
   useEffect(() => {
@@ -21,6 +21,13 @@ const Card: React.FC<CardProps> = ({ data,isfavorited }) => {
   }, [isfavorited]);
 
   const handleClick = async () => {
+    if(isFavorited==true)
+    {
+      setCards((prev) => {
+        console.log("prev",prev)
+        return prev.filter((card) => card.id !== data.id);
+      });
+    }
     const newIsFavorited = !isFavorited;
     setIsFavorited(newIsFavorited);
     const payload = {

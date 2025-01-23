@@ -1,5 +1,5 @@
-import db from '../../../../lib/db';
-import { NextResponse } from 'next/server';
+import db from "../../../../lib/db";
+import { NextResponse } from "next/server";
 
 export async function GET(request, { params }) {
   const { id } = await params;
@@ -7,33 +7,39 @@ export async function GET(request, { params }) {
   try {
     const favorites = await new Promise((resolve, reject) => {
       db.query(
-        'SELECT card_id FROM favorites WHERE user_id = ?',
+        "SELECT card_id FROM favorites WHERE user_id = ?",
         [id],
         (err, result) => {
           if (err) reject(err);
-          else resolve(result); 
+          else resolve(result);
         }
       );
     });
-    
 
     if (!favorites) {
-      return NextResponse.json(
-        { error: "Card not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Card not found" }, { status: 404 });
     }
     const array = [];
+    const cards = [];
     for (let i = 0; i < favorites.length; i++) {
       array.push(favorites[i].card_id);
+      const card = await new Promise((resolve, reject) => {
+        db.query(
+          "SELECT * FROM cards WHERE id = ?",
+          [favorites[i].card_id],
+          (err, result) => {
+            if (err) reject(err);
+            else resolve(result);
+          }
+        );
+      });
+      cards.push(card[0]);
     }
     return NextResponse.json({
-      message: 'favorites retrieved successfully',
+      message: "favorites retrieved successfully",
       favorites: array,
+      fullFavorites: cards,
     });
-
-    
-
   } catch (error) {
     console.error("Database error:", error);
     return NextResponse.json(

@@ -19,6 +19,7 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 const Navbar = () => {
   const [notification, setNotification] = React.useState<boolean | null>(null);
   const { data: session, status } = useSession();
+  const [picked, setPicked] = React.useState<boolean>("");
   const router = useRouter();
 
   const handleSignOut = () => {
@@ -35,6 +36,16 @@ const Navbar = () => {
       name: "Favorites",
       href: "/favorites",
       current: router.pathname === "/favorites",
+    },
+    {
+      name: "home",
+      href: "/home",
+      current: router.pathname === "/home",
+    },
+    {
+      name: "create",
+      href: "/cardAdd",
+      current: router.pathname === "/cardAdd",
     },
   ];
 
@@ -78,11 +89,12 @@ const Navbar = () => {
                 {session?.user &&
                   navigation.map((item) => (
                     <Link
+                    onClick={() => setPicked(item.name)}
                       key={item.name}
                       href={item.href}
                       className={classNames(
-                        item.current 
-                          ? "bg-gray-900 text-white font-semibold"
+                        item.name === picked 
+                          ? "bg-gray-900 text-gray-200 text-l "
                           : "text-gray-300 hover:bg-gray-700 hover:text-white",
                         "rounded-md px-3 py-2 text-sm font-medium"
                       )}
@@ -112,6 +124,7 @@ const Navbar = () => {
                   <MenuItem>
                     {({ focus }) => (
                       <Link
+                      onClick={() => setPicked("Profile")}
                         href="/profile"
                         className={classNames(
                           focus ? "bg-gray-100" : "",
