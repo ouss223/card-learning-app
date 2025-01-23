@@ -16,7 +16,7 @@ const Navbar = () => {
   const handleSignOut = () => {
     signOut({ callbackUrl: "/" });
   };
-  console.log(`../../public${session?.user.image}`);
+  console.log(`../../public${session?.user?.image}`);
 
   return (
     <div className="px-10 py-10 bg-red-200 shadow-md font-work-sans">
