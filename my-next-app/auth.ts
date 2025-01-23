@@ -26,14 +26,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             return null;
           }
       
-          // Trim and lowercase inputs
           const email = credentials.email.trim().toLowerCase();
           const password = credentials.password.trim();
       
-          // Database query
           console.log("🔍 Querying user:", email);
           const [user] = await db.queryAsync(
-            `SELECT id, email, password, username FROM users WHERE email = ?`, 
+            `SELECT id, email, password, username,image FROM users WHERE email = ?`, 
             [email]
           );
       
@@ -44,26 +42,25 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       
           console.log("✅ User found - ID:", user.id);
       
-          // Password verification
           console.log("🔒 Comparing passwords...");
           const isValid = await compare(password, user.password.toString());
           console.log(isValid ? "✅ Password valid" : "❌ Invalid password");
       
           if (!isValid) return null;
+          console.log("user image : " , user.image);
       
-          // Return PROPER user object
           return {
             id: user.id.toString(),
             email: user.email,
             name: user.username,
-            image: null
+            image: user.image || null
           };
       
         } catch (error) {
           console.error("🔥 Authorization error:", error);
           return null;
         }
-      } // <-- Missing comma added here
+      }
     })
   ],
   callbacks: {
@@ -72,6 +69,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
+        token.image = user.image;
       }
       return token;
     },
@@ -80,7 +78,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         ...session.user,
         id: token.id,
         email: token.email,
-        name: token.name
+        name: token.name,
+        image : token.image
       };
       return session;
     }

@@ -14,10 +14,9 @@ const Navbar = () => {
   const router = useRouter();
 
   const handleSignOut = () => {
-    signOut({ callbackUrl: "/" }); 
+    signOut({ callbackUrl: "/" });
   };
-  
-  
+  console.log(`../../public${session?.user.image}`);
 
   return (
     <div className="px-10 py-10 bg-red-200 shadow-md font-work-sans">
@@ -38,12 +37,21 @@ const Navbar = () => {
                 <span>Profile</span>
               </Link>
               <span>{session?.user?.name}</span>
+              <img
+                src={`${session.user.image}`}
+                className="rounded-full"
+                style={{ width: "50px", height: "50px" }}
+                alt="image"
+              />
               <button onClick={() => setNotification(true)}>Sign Out</button>
             </div>
           ) : (
-            <button onClick={()=>{
-              router.push("/login");
-            }} className="">
+            <button
+              onClick={() => {
+                router.push("/login");
+              }}
+              className=""
+            >
               Login
             </button>
           )}

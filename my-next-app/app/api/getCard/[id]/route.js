@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 import { Description } from '@headlessui/react';
 
 export async function GET(request, { params }) {
-  const { id } = params;
+  const { id } = await params;
 
   try {
     const card = await new Promise((resolve, reject) => {

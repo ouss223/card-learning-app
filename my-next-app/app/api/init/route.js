@@ -6,7 +6,10 @@ export async function GET(req) {
       id INT AUTO_INCREMENT PRIMARY KEY, 
       username VARCHAR(255) NOT NULL,
       email VARCHAR(255) NOT NULL UNIQUE,
-      password VARCHAR(255) NOT NULL
+      password VARCHAR(255) NOT NULL,
+      updated_at TIMESTAMP DEFAULT NOW(),
+      created_at TIMESTAMP DEFAULT NOW(),
+      image VARCHAR(511)
     )`,
     `CREATE TABLE IF NOT EXISTS users_progress (
       id INT AUTO_INCREMENT PRIMARY KEY, 
@@ -20,6 +23,7 @@ export async function GET(req) {
       description TEXT,
       target_language VARCHAR(255) NOT NULL,
       user_id INT NOT NULL,
+      total_words INT DEFAULT 0,
       FOREIGN KEY (user_id) REFERENCES users(id)
     )`,
     `CREATE TABLE IF NOT EXISTS words (
@@ -33,7 +37,15 @@ export async function GET(req) {
       translated_word VARCHAR(255) NOT NULL,
       word_id INT NOT NULL,
       FOREIGN KEY (word_id) REFERENCES words(id)
-    )`
+    )`,
+    `CREATE TABLE IF NOT EXISTS favorites (
+      id INT AUTO_INCREMENT PRIMARY KEY, 
+      user_id INT NOT NULL,
+      card_id INT NOT NULL,
+      FOREIGN KEY (user_id) REFERENCES users(id),
+      FOREIGN KEY (card_id) REFERENCES cards(id)
+    )`,
+
   ];
   
 
