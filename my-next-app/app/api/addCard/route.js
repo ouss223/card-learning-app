@@ -3,7 +3,7 @@ import db from '../../../lib/db';
 
 export async function POST(request) {
     try {
-        const {email, title, targetLanguage, description, words } = await request.json();
+        let {email, title, targetLanguage, description, words } = await request.json();
 
         const cardData = {
             title,
@@ -25,7 +25,7 @@ export async function POST(request) {
             INSERT INTO cards (title, target_language, description, user_id,total_words)
             VALUES (?, ?, ?, ?,?)
         `;
-        console.log("here comes");
+        words = words.filter(word_tuple => word_tuple[0] !== '' && word_tuple[1] !== '');
         const total_words = words.length;
 
         const cardResult = await new Promise((resolve, reject) => {

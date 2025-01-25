@@ -22,7 +22,7 @@ const CallbackPage = () => {
               username: session?.user?.name,
             }),
           });
-
+          console.log("response", response);
           if (response.ok) {
             const data = await response.json();
             console.log("User registered successfully:", data);
