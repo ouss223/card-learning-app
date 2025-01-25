@@ -66,7 +66,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
+        let id = user.id;
+        if (!Number.isInteger(id)) {
+          const [idd] = await db.queryAsync(
+          `SELECT id FROM users WHERE email = ?`, 
+          [user.email]
+        );
+        id = idd.id;
+
+      }
+        token.id = id;
         token.email = user.email;
         token.name = user.name;
         token.image = user.image;

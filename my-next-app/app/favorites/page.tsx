@@ -9,6 +9,7 @@ const favorites = () => {
   const [cards, setCards] = React.useState(null);
   const [Favorites, setFavorites] = React.useState([]);
   const { data: session } = useSession();
+  console.log(session);
 
   useEffect(() => {
 
