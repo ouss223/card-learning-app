@@ -1,20 +1,15 @@
-import { title } from 'process';
-import db from '../../../../lib/db';
 import { NextResponse } from 'next/server';
-import { Description } from '@headlessui/react';
+import db from '../../../../lib/db';
 
 export async function GET(request, { params }) {
-  const { id } = await params;
+  const { id } = params;
 
   try {
     const card = await new Promise((resolve, reject) => {
       db.query(
         'SELECT * FROM cards WHERE id = ?',
         [id],
-        (err, result) => {
-          if (err) reject(err);
-          else resolve(result[0]); 
-        }
+        (err, result) => err ? reject(err) : resolve(result[0])
       );
     });
 
@@ -24,44 +19,26 @@ export async function GET(request, { params }) {
         { status: 404 }
       );
     }
-    
 
     const words = await new Promise((resolve, reject) => {
       db.query(
-        'SELECT * FROM words WHERE card_id = ?',
+        'SELECT word, translated_word FROM words WHERE card_id = ?',
         [id],
-        (err, result) => {
-          if (err) reject(err);
-          else resolve(result);
-        }
+        (err, result) => err ? reject(err) : resolve(result)
       );
     });
-    
 
-    const wordPairs = [];
-    
-    for (const word of words) {
-      const translations = await new Promise((resolve, reject) => {
-        db.query(
-          'SELECT translated_word FROM translated_words WHERE word_id = ?',
-          [word.id],
-          (err, result) => {
-            if (err) reject(err);
-            else resolve(result);
-          }
-        );
-      });
-
-      translations.forEach(translation => {
-        wordPairs.push([word.word, translation.translated_word]);
-      });
-    }
+    const wordPairs = words.map(word => [
+      word.word,
+      word.translated_word
+    ]);
 
     return NextResponse.json({
       message: 'Card retrieved successfully',
-      cardData: wordPairs ,
+      cardData: wordPairs,
       title: card.title,
-      description : card.description
+      description: card.description,
+      targetLanguage: card.target_language 
     });
 
   } catch (error) {

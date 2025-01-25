@@ -30,13 +30,8 @@ export async function GET(req) {
       id INT AUTO_INCREMENT PRIMARY KEY, 
       word VARCHAR(255) NOT NULL,
       card_id INT NOT NULL,
+      translated_word VARCHAR(255),
       FOREIGN KEY (card_id) REFERENCES cards(id)
-    )`,
-    `CREATE TABLE IF NOT EXISTS translated_words (
-      id INT AUTO_INCREMENT PRIMARY KEY, 
-      translated_word VARCHAR(255) NOT NULL,
-      word_id INT NOT NULL,
-      FOREIGN KEY (word_id) REFERENCES words(id)
     )`,
     `CREATE TABLE IF NOT EXISTS favorites (
       id INT AUTO_INCREMENT PRIMARY KEY, 
