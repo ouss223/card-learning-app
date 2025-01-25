@@ -32,7 +32,6 @@ export async function GET(request) {
     for (const card of cards) {
       card.owner = ownersMap[card.user_id];
     }
-    console.log(cards);
 
     return NextResponse.json(cards);
   } catch (error) {

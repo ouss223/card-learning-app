@@ -1,6 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import { PhotoIcon, UserCircleIcon } from "@heroicons/react/24/solid";
+import Link from "next/link";
+import { redirect,useRouter } from 'next/navigation';
+import { signOut, signIn, useSession } from "next-auth/react";
 
 export default function Example() {
   const [email, setEmail] = useState("");
@@ -8,15 +11,22 @@ export default function Example() {
   const [password, setPassword] = useState("");
   const [photopreview, setPhotoPreview] = useState("");
   const [photoFile, setPhotoFile] = useState(null);
+  const { data: session } = useSession();
+  const router = useRouter();
+
+
+    if (session) {
+      redirect("/home");
+    }
 
   const handleSubmit = async (e) => {
-
     const formData = new FormData();
-    formData.append('email', email);
-    formData.append('username', username);
-    formData.append('password', password);
+    formData.append("email", email);
+    formData.append("username", username);
+    formData.append("password", password);
+    
     if (photoFile) {
-      formData.append('photo', photoFile);
+      formData.append("photo", photoFile);
     }
 
     try {
@@ -33,7 +43,7 @@ export default function Example() {
       const data = await res.json();
       console.log("Signup successful:", data);
       alert("Signup successful! You can now log in.");
-      // Optionally redirect the user
+      router.push("/login");     
     } catch (error) {
       console.error("Fetch error:", error);
       alert(error.message);
@@ -91,7 +101,7 @@ export default function Example() {
                     className="size-12 rounded-full object-cover"
                   />
                 ) : (
-                    <UserCircleIcon
+                  <UserCircleIcon
                     aria-hidden="true"
                     className="size-12 text-gray-300"
                   />
@@ -107,7 +117,7 @@ export default function Example() {
                     name="photo"
                     type="file"
                     accept="image/*"
-                    className="sr-only" 
+                    className="sr-only"
                     onChange={(e) => {
                       const file = e.target.files?.[0];
                       if (file) {
@@ -181,12 +191,12 @@ export default function Example() {
 
           <p className="mt-10 text-center text-sm/6 text-gray-500">
             Already have an account?{" "}
-            <a
-              href="#"
+            <Link
+              href="/login"
               className="font-semibold text-indigo-600 hover:text-indigo-500"
             >
               Log in here
-            </a>
+            </Link>
           </p>
         </div>
       </div>

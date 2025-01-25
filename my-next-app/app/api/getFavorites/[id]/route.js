@@ -15,9 +15,14 @@ export async function GET(request, { params }) {
         }
       );
     });
+    console.log(favorites);
 
-    if (!favorites) {
-      return NextResponse.json({ error: "Card not found" }, { status: 404 });
+    if (!favorites || favorites.length === 0) {
+      return NextResponse.json({
+        message: "No favorites found",
+        favorites: [],
+        fullFavorites: [],
+      });
     }
     const array = [];
     const cards = [];

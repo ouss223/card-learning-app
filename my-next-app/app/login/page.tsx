@@ -4,11 +4,17 @@ import Link from "next/link";
 import Image from "next/image";
 import { signOut, signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { redirect } from 'next/navigation';
 
 export default function Example() {
   const [isHovered, setIsHovered] = React.useState(false);
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const { data: session } = useSession();
+  
+      if (session) {
+        redirect("/home");
+      }
   const handleSignInGithub = async () => {
     const result = await signIn("github", { callbackUrl: "/callback" });
   };
@@ -105,6 +111,15 @@ export default function Example() {
               </button>
             </div>
           </form>
+          <p className="mt-10 text-center text-sm/6 text-gray-500">
+            don't have an account?{" "}
+            <Link
+              href="/signup"
+              className="font-semibold text-indigo-600 hover:text-indigo-500"
+            >
+              sign up here
+            </Link>
+          </p>
 
           <div className="border-t mt-10 text-gray-400    border-black  pt-10 text-gray-900 flex justify-center items-center">
             <button
