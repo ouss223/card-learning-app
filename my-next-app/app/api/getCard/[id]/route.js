@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import db from '../../../../lib/db';
 
 export async function GET(request, { params }) {
-  const { id } = params;
+  const { id } = await params;
 
   try {
     const card = await new Promise((resolve, reject) => {
@@ -22,15 +22,16 @@ export async function GET(request, { params }) {
 
     const words = await new Promise((resolve, reject) => {
       db.query(
-        'SELECT word, translated_word FROM words WHERE card_id = ?',
+        'SELECT id, word, translated_word FROM words WHERE card_id = ?', // Added id to SELECT
         [id],
         (err, result) => err ? reject(err) : resolve(result)
       );
     });
 
     const wordPairs = words.map(word => [
-      word.word,
-      word.translated_word
+      word.word,          
+      word.translated_word, 
+      word.id            
     ]);
 
     return NextResponse.json({
