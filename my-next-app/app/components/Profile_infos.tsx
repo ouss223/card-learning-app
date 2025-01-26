@@ -115,9 +115,9 @@ export default function Profile() {
       <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
         {[
           { label: 'daily Streak', value: stats?.dailyStreak, unit: 'days' },
-          { label: 'total Terms Learned', value: stats?.totalTermsLearned, unit: 'cards' },
+          { label: 'total Terms Learned', value: stats?.totalTermsLearned, unit: 'words' },
           { label: 'accuracy', value: stats?.accuracy, unit: '%' },
-          { label: 'xp', value: stats?.xp, unit: 'xp' },
+          { label: 'xp', value: stats?.xp, unit: 'points' },
         ].map((stat, idx) => (
           <div 
             key={idx}
@@ -128,7 +128,7 @@ export default function Profile() {
             }}
           >
             <div style={{ color: '#7fcac9' }} className="text-2xl font-bold">
-              {stat.value}
+              {stat.value} {stat.unit}
             </div>
             <div style={{ color: 'rgba(255,255,255,0.7)' }} className="text-sm mt-1">
               {stat.label}

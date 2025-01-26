@@ -167,6 +167,7 @@ export default function Hero() {
               sx={{ pt: 2, width: { xs: '100%', sm: '350px' }, justifyContent: 'center' }}
             >
               <Button
+              onClick={() => redirect('/login')}
                 variant="contained"
                 color="primary"
                 size="small"

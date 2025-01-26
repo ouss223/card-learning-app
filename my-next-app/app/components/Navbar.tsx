@@ -36,14 +36,18 @@ const Navbar = () => {
               method: 'PATCH',
               credentials: 'include' 
             });
+
             
             if (response.ok) {
+              console.log('Streak updated successfully' , session);
               const expires = new Date();
-              expires.setUTCHours(24, 0, 0, 0);
+              expires.setUTCHours(23, 0, 0, 0);
               
               Cookies.set('streakUpdated', today, {
                 expires: expires,
-                sameSite: 'strict'
+                sameSite: 'lax',
+                path: '/',
+                secure: process.env.NODE_ENV === 'production',
               });
             }
           } catch (error) {
@@ -57,6 +61,7 @@ const Navbar = () => {
   }, [session]);
 
   const handleSignOut = () => {
+    Cookies.remove('streakUpdated');
     signOut({ callbackUrl: "/" });
   };
 
