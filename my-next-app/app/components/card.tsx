@@ -132,7 +132,7 @@ const Card: React.FC<CardProps> = ({ data, isfavorited, setCards }) => {
           <img
             width={40}
             height={40}
-            src={data.owner.image}
+            src={data?.owner?.image ? data?.owner?.image : "/avatar.jpeg"}
             alt="Avatar"
             style={{
               borderRadius: "50%",

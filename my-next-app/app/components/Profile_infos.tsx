@@ -29,7 +29,7 @@ export default function Profile() {
 
   return (
     <div 
-      className=" p-8 w-full h-screen pt-20"
+      className=" p-8 w-full min-h-screen pt-20"
       style={{
         background: 'linear-gradient(145deg, #1e2b3a 0%, #2a3f54 100%)',
         boxShadow: '0 8px 24px rgba(0,0,0,0.15)'

@@ -3,7 +3,7 @@ import Infos from "../components/Profile_infos";
 
 const Profile = () => {
   return (
-    <div className="w-full h-full">
+    <div className="w-full ">
       <Infos />
     </div>
   );

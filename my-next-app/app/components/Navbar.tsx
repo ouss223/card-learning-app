@@ -86,6 +86,11 @@ const Navbar = () => {
       href: "/cardAdd",
       current: router.pathname === "/cardAdd",
     },
+    {
+      name: "created",
+      href: "/created",
+      current: router.pathname === "/created",
+    },
   ];
 
   function classNames(...classes: string[]) {
