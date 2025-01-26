@@ -5,6 +5,9 @@ import Image from "next/image";
 import { signOut, signIn, useSession } from "next-auth/react";
 import Notification from "./Notification";
 import { useRouter } from "next/navigation";
+import Cookies from 'js-cookie';
+import { useEffect } from 'react';
+
 import {
   Disclosure,
   DisclosureButton,
@@ -21,6 +24,37 @@ const Navbar = () => {
   const { data: session, status } = useSession();
   const [picked, setPicked] = React.useState<boolean>("");
   const router = useRouter();
+  useEffect(() => {
+    if (session) {
+      const lastUpdated = Cookies.get('streakUpdated');
+      const today = new Date().toISOString().split('T')[0];
+      
+      if (!lastUpdated || lastUpdated !== today) {
+        const updateStreak = async () => {
+          try {
+            const response = await fetch(`/api/updateStreak/${session?.user?.id}`, {
+              method: 'PATCH',
+              credentials: 'include' 
+            });
+            
+            if (response.ok) {
+              const expires = new Date();
+              expires.setUTCHours(24, 0, 0, 0);
+              
+              Cookies.set('streakUpdated', today, {
+                expires: expires,
+                sameSite: 'strict'
+              });
+            }
+          } catch (error) {
+            console.error('Streak update failed:', error);
+          }
+        };
+
+        updateStreak();
+      }
+    }
+  }, [session]);
 
   const handleSignOut = () => {
     signOut({ callbackUrl: "/" });

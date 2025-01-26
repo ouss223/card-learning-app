@@ -3,7 +3,7 @@
 import React from "react";
 import { PaperClipIcon } from '@heroicons/react/20/solid';
 import { useSession } from "next-auth/react";
-
+//update the other parts later (the ones besides stats)
 export default function Profile() {
   const { data: session } = useSession();
   const [stats, setStats] = React.useState(null);
