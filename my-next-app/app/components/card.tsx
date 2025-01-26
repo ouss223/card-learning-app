@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import FavoriteIcon from "@mui/icons-material/Favorite";
+import DeleteIcon from "@mui/icons-material/Delete";
+
 import IconButton from "@mui/material/IconButton";
 import { useSession } from "next-auth/react";
 
@@ -13,7 +15,12 @@ interface CardProps {
   };
 }
 
-const Card: React.FC<CardProps> = ({ data, isfavorited, setCards }) => {
+const Card: React.FC<CardProps> = ({
+  data,
+  isfavorited,
+  setCards,
+  delete_item,
+}) => {
   const [isFavorited, setIsFavorited] = useState(isfavorited);
   const { data: session } = useSession();
   useEffect(() => {
@@ -50,6 +57,31 @@ const Card: React.FC<CardProps> = ({ data, isfavorited, setCards }) => {
     } catch (error) {
       console.error("Error:", error);
     }
+  };
+  const handleDelete = async () => {
+    const del = async () => {
+      try {
+        const res = await fetch(
+          `http://localhost:3000/api/deleteCard/${data.id}`,
+          {
+            method: "DELETE",
+            body: JSON.stringify({ id: data.id }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        const responseData = await res.json();
+        console.log(responseData);
+        setCards((prev) => {
+          return prev.filter((card) => card.id !== data.id);
+        });
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+    del();
   };
 
   return (
@@ -119,6 +151,16 @@ const Card: React.FC<CardProps> = ({ data, isfavorited, setCards }) => {
               }}
             />
           </IconButton>
+          {delete_item && (
+            <IconButton onClick={handleDelete}>
+              <DeleteIcon
+                style={{
+                  color: "gray",
+                  transition: "color 0.3s",
+                }}
+              />
+            </IconButton>
+          )}
         </div>
       </div>
       <div

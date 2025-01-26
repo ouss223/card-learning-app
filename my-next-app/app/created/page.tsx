@@ -38,6 +38,7 @@ const Home = () => {
       console.log(error);
     }
   }, [session]);
+  
 
   return (
     <div>
@@ -47,6 +48,7 @@ const Home = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3  xl:grid-cols-4 gap-4 p-4 px-12 pt-12">
           {Array.from({ length: cards.length }).map((_, index) => (
             <Card
+            delete_item={true}
               key={index}
               data={cards[index]}
               isfavorited={() => {

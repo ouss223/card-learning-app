@@ -47,6 +47,7 @@ const Home = () => {
           {Array.from({ length: cards.length }).map((_, index) => (
             <Card
               key={index}
+              delete_item={false}
               data={cards[index]}
               isfavorited={() => {
                 console.log(Favorites);
