@@ -27,6 +27,8 @@ const Learning = () => {
         const data = await res.json();
         setTitle(data.title);
         setTerms(data.cardData || []);
+        setTerms((prev) => [...prev, ["done", "done", "done", "done"]]);
+        
         setDescription(data.description);
       } catch (error) {
         console.error("Fetch error:", error);
@@ -132,7 +134,7 @@ const Learning = () => {
             textAlign: "center",
           }}
         >
-          {index + 1} / {terms.length}
+          {Math.min(index + 1,terms.length -1)} / {terms.length-1}
         </span>
 
         <button
