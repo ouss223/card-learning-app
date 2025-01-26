@@ -48,6 +48,7 @@ export async function GET(req) {
       total_terms_learned INT DEFAULT 0,
       daily_streak INT DEFAULT 0,
       accuracy DECIMAL(5,2) DEFAULT 0.00,
+      xp INT DEFAULT 0,
       FOREIGN KEY (user_id) REFERENCES users(id)
     );`,
 

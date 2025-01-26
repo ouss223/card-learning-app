@@ -6,6 +6,22 @@ import { useSession } from "next-auth/react";
 
 export default function Profile() {
   const { data: session } = useSession();
+  const [stats, setStats] = React.useState(null);
+  React.useEffect(() => {
+    const getStats = async ()=>{
+
+      try{
+        if(!session) return;
+        const res = await fetch(`/api/getStats/${session?.user?.id}`);
+        const data = await res.json();
+        setStats(data.stats);
+        console.log(data);
+      }catch(err){
+        console.log(err);
+      }
+    }
+    getStats();
+  }, [session]);
 
   if (!session) {
     return <div className="text-gray-300">Loading...</div>;
@@ -98,10 +114,10 @@ export default function Profile() {
 
       <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
         {[
-          { label: 'Daily Streak', value: '14', unit: 'days' },
-          { label: 'Active Cards', value: '58', unit: 'cards' },
-          { label: 'Accuracy', value: '92', unit: '%' },
-          { label: 'XP Earned', value: '4.8k', unit: 'xp' },
+          { label: 'daily Streak', value: stats?.dailyStreak, unit: 'days' },
+          { label: 'total Terms Learned', value: stats?.totalTermsLearned, unit: 'cards' },
+          { label: 'accuracy', value: stats?.accuracy, unit: '%' },
+          { label: 'xp', value: stats?.xp, unit: 'xp' },
         ].map((stat, idx) => (
           <div 
             key={idx}
