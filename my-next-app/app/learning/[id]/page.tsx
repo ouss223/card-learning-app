@@ -10,7 +10,7 @@ const Learning = () => {
   const [index, setIndex] = React.useState(0);
   const [side, setSide] = React.useState(0);
   const [loading, setLoading] = React.useState(true);
-  const [terms, setTerms] = React.useState<string[][]>([]);
+  const [terms, setTerms] = React.useState<string[][][][]>([]);//word/translated/id/learned?
   const [title, setTitle] = React.useState("");
   const [description, setDescription] = React.useState("");
   const { data: session } = useSession();
@@ -20,7 +20,8 @@ const Learning = () => {
   React.useEffect(() => {
     const fetchCardData = async () => {
       try {
-        const res = await fetch(`/api/getCard/${id}`);
+        console.log(session);
+        const res = await fetch(`/api/getCard/${id}?user_id=${session?.user?.id}`);
         if (!res.ok) throw new Error("Failed to fetch");
 
         const data = await res.json();
@@ -33,9 +34,10 @@ const Learning = () => {
         setLoading(false);
       }
     };
+    
 
     fetchCardData();
-  }, [id]);
+  }, [id,session]);
   const HandleButtonPress = (action: string, know: boolean): void => {
     const sendProgress = async () => {
       try {
@@ -53,8 +55,7 @@ const Learning = () => {
       }
     };
     sendProgress();
-    const i = action == "add" ? 1 : -1;
-    setIndex((prev) => Math.min(prev + i, terms.length - 1));
+    setIndex((prev) => Math.min(prev + 1, terms.length - 1));
   };
 
   if (loading) return <Loading />;
@@ -111,17 +112,16 @@ const Learning = () => {
       <div className="flex items-center gap-8 mt-12">
         <button
           onClick={() => HandleButtonPress("add", false)}
-          disabled={index === 0}
+          disabled={index === terms.length - 1}
           className="p-3 rounded-full transition-all"
           style={{
             background: "rgba(127,202,201,0.1)",
-            opacity: index === 0 ? 0.5 : 1,
-            cursor: index === 0 ? "not-allowed" : "pointer",
+            opacity: index === terms.length - 1 ? 0.5 : 1,
+            cursor: index === terms.length - 1 ? "not-allowed" : "pointer",
             boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
           }}
         >
-          <FaArrowLeft className="h-8 w-8" style={{ color: "#7fcac9" }} />
-          dunno
+          dunno 🔴
         </button>
 
         <span
@@ -146,10 +146,25 @@ const Learning = () => {
             boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
           }}
         >
-          <FaArrowRight className="h-8 w-8" style={{ color: "#7fcac9" }} />
-          know
+          know✅
         </button>
       </div>
+      <div>
+      <button
+          onClick={() => setIndex((prev) => Math.min(prev -1, terms.length - 1))}
+          disabled={index === 0}
+          className="p-3 rounded-full transition-all"
+          style={{
+            background: "rgba(127,202,201,0.1)",
+            opacity: index === 0 ? 0.5 : 1,
+            cursor: index === 0 ? "not-allowed" : "pointer",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+          }}
+        >
+      <FaArrowLeft className="h-8 w-8" style={{ color: "#7fcac9" }} />
+      </button>
+      </div>
+
     </div>
   );
 };
