@@ -1,10 +1,37 @@
 import { NextResponse } from 'next/server';
-import db from '../../../../lib/db';
+import db from '../../../lib/db';
+import jwt from 'jsonwebtoken';
 
-export async function PATCH(request, { params }) {
-  const { id: userId } = params;
-
+export async function PATCH(request) {
   try {
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json(
+        { error: "Unauthorized - Missing token" },
+        { status: 401 }
+      );
+    }
+
+    const token = authHeader.split(' ')[1];
+    let decoded;
+    
+    try {
+      decoded = jwt.verify(token, process.env.AUTH_SECRET);
+    } catch (error) {
+      return NextResponse.json(
+        { error: "Unauthorized - Invalid token" },
+        { status: 401 }
+      );
+    }
+
+    const userId = decoded.userId;
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Unauthorized - Invalid token payload" },
+        { status: 401 }
+      );
+    }
+
     const now = new Date();
     const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
     const todayStr = today.toISOString().split('T')[0];

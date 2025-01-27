@@ -25,7 +25,6 @@ const Navbar = () => {
   const { data: session, status } = useSession();
   const [picked, setPicked] = React.useState<boolean>("");
   const router = useRouter();
-  console.log("session : ",session);
   useEffect(() => {
     if (session) {
       const lastUpdated = Cookies.get('streakUpdated');
@@ -34,9 +33,12 @@ const Navbar = () => {
       if (!lastUpdated || lastUpdated !== today) {
         const updateStreak = async () => {
           try {
-            const response = await fetch(`/api/updateStreak/${session?.user?.id}`, {
+            const response = await fetch(`/api/updateStreak`, {
               method: 'PATCH',
-              credentials: 'include' 
+              credentials: 'include' ,
+              headers : {
+                authorization: `Bearer ${session.user.accessToken}`,
+              }
             });
 
             
