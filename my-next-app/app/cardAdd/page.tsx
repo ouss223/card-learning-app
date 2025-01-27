@@ -25,7 +25,6 @@ export default function Example() {
     const email = session?.user?.email;
 
     const cardData = {
-      email,
       title,
       targetLanguage,
       description,
@@ -36,6 +35,7 @@ export default function Example() {
       const response = await fetch("/api/addCard", {
         method: "POST",
         headers: {
+          authorization: `Bearer ${session?.user?.accessToken}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(cardData),

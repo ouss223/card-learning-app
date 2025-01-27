@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server';
 import db from '../../../lib/db';
+import { authenticateRequest } from '../authenticateRequest'; 
 
 export async function POST(request) {
     try {
-        const { email, title, targetLanguage, description, words } = await request.json();
+        const { title, targetLanguage, description, words } = await request.json();
+        const userId = authenticateRequest(request); 
+
 
         const cardData = {
             title,
@@ -11,14 +14,6 @@ export async function POST(request) {
             description,
             words,
         };
-
-        const userId = await new Promise((resolve, reject) => {
-            db.query(
-                "SELECT id FROM users WHERE email = ?", 
-                [email], 
-                (err, result) => err ? reject(err) : resolve(result[0]?.id)
-            );
-        });
 
         const filteredWords = words.filter(([word, trans]) => word.trim() && trans.trim());
         const insertCardQuery = `
