@@ -1,18 +1,18 @@
 import { NextResponse } from "next/server";
 import db from "../../../lib/db";
+import { authenticateRequest } from '../authenticateRequest'; 
 
 export async function POST(request) {
   try {
-    const { user_id, card_id, intent } = await request.json();
-    console.log("user_id", user_id);
-    console.log("card_id", card_id);
-    console.log("intent", intent);
+    const { card_id, intent } = await request.json();
+    const userId = authenticateRequest(request); 
+
 
     if (intent === "add") {
       const addfavoritesQuery =
         "INSERT INTO favorites (user_id,card_id) VALUES (?,?)";
       const favId = await new Promise((resolve, reject) => {
-        db.query(addfavoritesQuery, [user_id, card_id], (err, result) => {
+        db.query(addfavoritesQuery, [userId, card_id], (err, result) => {
           if (err) reject(err);
           else resolve(result.insertId);  
         });
@@ -26,7 +26,7 @@ export async function POST(request) {
       const removefavoritesQuery =
         "DELETE FROM favorites WHERE user_id = ? AND card_id = ?";
       await new Promise((resolve, reject) => {
-        db.query(removefavoritesQuery, [user_id, card_id], (err, result) => {
+        db.query(removefavoritesQuery, [userId, card_id], (err, result) => {
           if (err) reject(err);
           else resolve(result);
         });

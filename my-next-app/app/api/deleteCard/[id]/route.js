@@ -2,23 +2,18 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import db from "@/lib/db";
+import { authenticateRequest } from '../../authenticateRequest'; 
 
 export async function DELETE(request, { params }) {
   const { id } = params;
 
   try {
-    const session = await getServerSession(request, authOptions);
-    
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: "Unauthorized - Please log in" },
-        { status: 401 }
-      );
-    }
+    const userId = authenticateRequest(request); 
+
 
     const [card] = await db.queryAsync(
       `SELECT id FROM cards WHERE id = ? AND user_id = ?`,
-      [id, session.user.id]
+      [id, userId]
     );
 
     if (!card) {

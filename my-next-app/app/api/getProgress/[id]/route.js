@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import db from '../../../../lib/db';
-
+//add auth to this later not needed for now as i dont use the api itself
 export async function GET(request, { params }) {
   const { id: cardId } = params;
   const { searchParams } = new URL(request.url);

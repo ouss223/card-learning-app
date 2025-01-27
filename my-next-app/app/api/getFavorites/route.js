@@ -1,14 +1,16 @@
-import db from "../../../../lib/db";
+import db from "../../../lib/db";
 import { NextResponse } from "next/server";
+import { authenticateRequest } from '../authenticateRequest'; 
 
-export async function GET(request, { params }) {
-  const { id } = await params;
+export async function GET(request) {
 
   try {
+    const userId = authenticateRequest(request); 
+
     const favorites = await new Promise((resolve, reject) => {
       db.query(
         "SELECT card_id FROM favorites WHERE user_id = ?",
-        [id],
+        [userId],
         (err, result) => {
           if (err) reject(err);
           else resolve(result);

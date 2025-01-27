@@ -18,7 +18,14 @@ const Home = () => {
     };
     const retrieveFavorites = async () => {
       const res = await fetch(
-        `http://localhost:3000/api/getFavorites/${session?.user?.id}`
+        `http://localhost:3000/api/getFavorites`,
+        {
+          method: "GET",
+          headers: {
+            authorization: `Bearer ${session?.user?.accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
       );
       const data = await res.json();
       console.log(data);

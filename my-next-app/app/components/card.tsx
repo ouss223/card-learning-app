@@ -28,7 +28,8 @@ const Card: React.FC<CardProps> = ({
   }, [isfavorited]);
 
   const handleClick = async () => {
-    if (isFavorited == true) {
+    if (isFavorited == true && setCards) {
+
       setCards((prev) => {
         console.log("prev", prev);
         return prev.filter((card) => card.id !== data.id);
@@ -48,6 +49,7 @@ const Card: React.FC<CardProps> = ({
         method: "POST",
         body: JSON.stringify(payload),
         headers: {
+          authorization: `Bearer ${session?.user?.accessToken}`,
           "Content-Type": "application/json",
         },
       });
@@ -67,6 +69,7 @@ const Card: React.FC<CardProps> = ({
             method: "DELETE",
             body: JSON.stringify({ id: data.id }),
             headers: {
+              authorization: `Bearer ${session?.user?.accessToken}`,
               "Content-Type": "application/json",
             },
           }
