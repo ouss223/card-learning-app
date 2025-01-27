@@ -53,6 +53,7 @@ export async function GET(req) {
     );`,
 
   ];
+  //last_login_date DATE
 
   for (const query of queries) {
     db.query(query, (err) => {

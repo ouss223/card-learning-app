@@ -5,7 +5,8 @@ const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: '',
-  database: 'cardApp'
+  database: 'cardApp',
+  dateStrings: true
 });
 
 // Promisify the query function
