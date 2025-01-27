@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import Cookies from 'js-cookie';
 import { useEffect } from 'react';
 
+
 import {
   Disclosure,
   DisclosureButton,
@@ -24,6 +25,7 @@ const Navbar = () => {
   const { data: session, status } = useSession();
   const [picked, setPicked] = React.useState<boolean>("");
   const router = useRouter();
+  console.log("session : ",session);
   useEffect(() => {
     if (session) {
       const lastUpdated = Cookies.get('streakUpdated');

@@ -3,6 +3,7 @@ import GitHub from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
 import db from "./lib/db";
 import { compare } from "bcryptjs";
+import jwt from 'jsonwebtoken';
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   debug: process.env.NODE_ENV === 'development',
@@ -48,12 +49,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       
           if (!isValid) return null;
           console.log("user image : " , user.image);
+
+          const token = jwt.sign(
+            { userId: user.id.toString() },
+            process.env.AUTH_SECRET,
+            { expiresIn: '200h' }
+          );
       
           return {
             id: user.id.toString(),
             email: user.email,
             name: user.username,
-            image: user.image || null
+            image: user.image || null,
+            accessToken: token
           };
       
         } catch (error) {
@@ -67,18 +75,25 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         let id = user.id;
+        let accessToken = user.accessToken;
         if (!Number.isInteger(id)) {
           const [idd] = await db.queryAsync(
           `SELECT id FROM users WHERE email = ?`, 
           [user.email]
-        );
-        id = idd.id;
-
-      }
+          );
+          id = idd.id;
+          accessToken = jwt.sign(
+            { userId: id.toString() },
+            process.env.AUTH_SECRET,
+            { expiresIn: '200h' }
+            );
+            }
+        
         token.id = id;
         token.email = user.email;
         token.name = user.name;
         token.image = user.image;
+        token.accessToken = accessToken;
       }
       return token;
     },
@@ -88,7 +103,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         id: token.id,
         email: token.email,
         name: token.name,
-        image : token.image
+        image : token.image,
+        accessToken: token.accessToken
       };
       return session;
     }
