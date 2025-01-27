@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server';
 import db from '../../../lib/db';
+import { authenticateRequest } from '../authenticateRequest'; 
 
 export async function POST(request) {
   try {
-    const { user_id, word_id, is_learned } = await request.json();
+    const {  word_id, is_learned } = await request.json();
+    const userId = authenticateRequest(request); 
+
 
     await new Promise((resolve, reject) => {
       db.query(`
@@ -12,7 +15,7 @@ export async function POST(request) {
         VALUES (?, ?, ?)
         ON DUPLICATE KEY UPDATE
           is_learned = VALUES(is_learned)
-      `, [user_id, word_id, is_learned], 
+      `, [userId, word_id, is_learned], 
       (err) => err ? reject(err) : resolve()
       );
     });

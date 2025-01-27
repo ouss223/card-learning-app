@@ -45,6 +45,10 @@ const Learning = () => {
       try {
         const res = await fetch("/api/postProgress", {
           method: "POST",
+          headers: {
+            authorization: `Bearer ${session?.user?.accessToken}`,
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({
             user_id: session?.user?.id,
             word_id: terms[index][2],
