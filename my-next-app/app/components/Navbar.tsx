@@ -19,34 +19,16 @@ import {
 } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon, BellIcon } from "@heroicons/react/24/outline";
 
-const temp_notifications = [
-  {
-    title: "New Card",
-    description: "A new card has been added to the official page to the official page to the offto the official pageicial page to the official page",
-  },
-  {
-    title: "New Card",
-    description: "A new card has been added to the official page",
-  },
-  {
-    title: "New Card",
-    description: "A new card has been added to the official page",
-  },
-  {
-    title: "New Card",
-    description: "A new card has been added to the official page",
-  },
-  {
-    title: "New Card",
-    description: "A new card has been added to the official page",
-  },
-];
+
+
+
 
 const Navbar = () => {
   const [notification, setNotification] = React.useState<boolean | null>(null);
   const { data: session, status } = useSession();
   const [picked, setPicked] = React.useState<boolean>("");
   const router = useRouter();
+  const [notifs, setNotifs] = React.useState<any>([]);
   useEffect(() => {
     if (session) {
       console.log("Session:", session);
@@ -83,8 +65,32 @@ const Navbar = () => {
 
         updateStreak();
       }
+      const retrieveNotifications = async () => {
+        try {
+          const response = await fetch("/api/notifications/getSmall", {
+            method: "GET",
+            headers: {
+              authorization: `Bearer ${session.user.accessToken}`,
+            },
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            console.log("Notifications:", data);
+            setNotifs(data.notifs);
+          } else {
+            console.error("Failed to retrieve notifications");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      };
+      retrieveNotifications();
     }
+
   }, [session]);
+
+
 
   const handleSignOut = () => {
     Cookies.remove("streakUpdated");
@@ -189,20 +195,22 @@ const Navbar = () => {
                     <BellIcon aria-hidden="true" className="size-6" />
                   </MenuButton>
                   <MenuItems style={{width:"320px"}} className="absolute right-0 z-10 mt-10  origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                    {temp_notifications.map((item, index) => (
-                      <MenuItem key={index}>
-                        {({ focus }) => (
-                          <div
-                            className={classNames(
-                              focus ? "bg-gray-100" : "",
-                              "block w-full text-left px-4 py-2 text-sm text-gray-700",
-                              "hover:bg-gray-200" 
-                            )}
-                          >
-                            {item.description}{" "}
-                          </div>
-                        )}
-                      </MenuItem>
+                    {notifs.map((item, index) => (
+                     <MenuItem key={index}>
+                     {({ focus }) => (
+                       <div
+                         className={classNames(
+                           focus ? "bg-gray-100" : "",
+                           "block w-full text-left px-6 py-3 text-sm text-gray-700 rounded-md transition-colors duration-200",
+                           "hover:bg-gray-200 hover:text-gray-900"
+                         )}
+                       >
+                         <div className="font-semibold text-gray-800">{item.type} notification</div>
+                         <p className="text-gray-600 text-sm mt-1">{item.content}</p>
+                       </div>
+                     )}
+                   </MenuItem>
+                   
                     ))}
                   </MenuItems>
                 </Menu>

@@ -1,6 +1,6 @@
-import db from "../../../lib/db";
+import db from "../../../../lib/db";
 import { NextResponse } from "next/server";
-import { authenticateRequest } from "../authenticateRequest";
+import { authenticateRequest } from "../../authenticateRequest";
 
 export async function GET(request) {
   try {
