@@ -26,7 +26,7 @@ export async function POST(request) {
     };
     const insertNotifQuery = `
     INSERT INTO notifications (user_id, type, content,is_read, created_at)
-    SELECT id, ?, ?
+    SELECT id, ?, ?, ?, ?
     FROM users;
   `;
 
