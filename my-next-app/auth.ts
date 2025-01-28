@@ -32,7 +32,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       
           console.log("🔍 Querying user:", email);
           const [user] = await db.queryAsync(
-            `SELECT id, email, password, username,image FROM users WHERE email = ?`, 
+            `SELECT id, email,role, password, username,image FROM users WHERE email = ?`, 
             [email]
           );
       
@@ -51,17 +51,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           console.log("user image : " , user.image);
 
           const token = jwt.sign(
-            { userId: user.id.toString() },
+            { userId: user.id.toString(),
+              role : user.role
+             },
             process.env.AUTH_SECRET,
             { expiresIn: '200h' }
           );
+          console.log("role : " , user.role);
       
           return {
-            id: user.id.toString(),
+            id: user.id,
             email: user.email,
             name: user.username,
             image: user.image || null,
-            accessToken: token
+            accessToken: token,
+            role : user.role
           };
       
         } catch (error) {
@@ -73,27 +77,35 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   callbacks: {
     async jwt({ token, user }) {
+      console.log("=== JWT Callback ===");
+      console.log("user : " , user);
       if (user) {
         let id = user.id;
         let accessToken = user.accessToken;
-        if (!Number.isInteger(id)) {
+        let role = user.role;
+        if (isNaN(parseInt(id, 10))) {
           const [idd] = await db.queryAsync(
           `SELECT id FROM users WHERE email = ?`, 
           [user.email]
           );
           id = idd.id;
+          role = "user";
           accessToken = jwt.sign(
-            { userId: id.toString() },
+            { userId: id.toString(),
+              role : "user"
+             },
             process.env.AUTH_SECRET,
             { expiresIn: '200h' }
             );
-            }
+
+        }
         
         token.id = id;
         token.email = user.email;
         token.name = user.name;
         token.image = user.image;
         token.accessToken = accessToken;
+        token.role = role ;
       }
       return token;
     },
@@ -104,6 +116,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         email: token.email,
         name: token.name,
         image : token.image,
+        role : token.role,
         accessToken: token.accessToken
       };
       return session;

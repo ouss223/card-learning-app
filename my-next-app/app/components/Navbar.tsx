@@ -27,6 +27,7 @@ const Navbar = () => {
   const router = useRouter();
   useEffect(() => {
     if (session) {
+      console.log('Session:', session);
       const lastUpdated = Cookies.get('streakUpdated');
       const today = new Date().toISOString().split('T')[0];
       

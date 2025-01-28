@@ -9,7 +9,8 @@ export async function GET(req) {
       password VARCHAR(255) NOT NULL,
       updated_at TIMESTAMP DEFAULT NOW(),
       created_at TIMESTAMP DEFAULT NOW(),
-      image VARCHAR(511)
+      image VARCHAR(511),
+      role ENUM('user', 'admin') DEFAULT 'user'
     )`,
     `CREATE TABLE IF NOT EXISTS cards (
       id INT AUTO_INCREMENT PRIMARY KEY, 
