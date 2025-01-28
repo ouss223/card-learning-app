@@ -1,11 +1,26 @@
 import { NextResponse } from "next/server";
-import db from "../../../lib/db";
+import db from "../../../../../lib/db";
+import { authenticateRequest } from "../../../authenticateRequest";
 
-export async function GET(request) {
+export async function GET(request, { params }) {
   try {
-    const getCardsQuery = `
-            SELECT * FROM cards
-        `;
+    const { type } = await params;
+    const userId = authenticateRequest(request);
+    let getCardsQuery = '';
+    if (type === "community") {
+      getCardsQuery = `
+      select cards.* from cards left join users on cards.user_id = users.id where users.role = 'user'
+  `;
+    } else if (type === "official") {
+      getCardsQuery = `
+      select * from cards left join users on cards.user_id = users.id where users.role = 'admin'
+  `;
+    } else {
+      return NextResponse.json(
+        { error: "wrong type" },
+        { status: 402 }
+      );
+    }
 
     const cards = await new Promise((resolve, reject) => {
       db.query(getCardsQuery, (err, result) => {

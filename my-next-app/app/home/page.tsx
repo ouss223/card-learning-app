@@ -12,21 +12,24 @@ const Home = () => {
 
   useEffect(() => {
     const retrieveCards = async () => {
-      const res = await fetch("http://localhost:3000/api/getCards");
+      const res = await fetch("http://localhost:3000/api/getCards/type/community", {
+        method: "GET",
+        headers: {
+          authorization: `Bearer ${session?.user?.accessToken}`,
+          "Content-Type": "application/json",
+        },
+      });
       const data = await res.json();
       setCards(data);
     };
     const retrieveFavorites = async () => {
-      const res = await fetch(
-        `http://localhost:3000/api/getFavorites`,
-        {
-          method: "GET",
-          headers: {
-            authorization: `Bearer ${session?.user?.accessToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const res = await fetch(`http://localhost:3000/api/getFavorites`, {
+        method: "GET",
+        headers: {
+          authorization: `Bearer ${session?.user?.accessToken}`,
+          "Content-Type": "application/json",
+        },
+      });
       const data = await res.json();
       console.log(data);
       setFavorites(() => {

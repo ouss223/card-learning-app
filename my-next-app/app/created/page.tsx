@@ -12,7 +12,7 @@ const Home = () => {
 
   useEffect(() => {
     const retrieveCards = async () => {
-      const res = await fetch(`http://localhost:3000/api/getCards/${session?.user?.id}`);
+      const res = await fetch(`http://localhost:3000/api/getCards/id/${session?.user?.id}`);
       const data = await res.json();
       console.log(data);
       setCards(data);
