@@ -1,11 +1,9 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import db from "@/lib/db";
 import { authenticateRequest } from '../../authenticateRequest'; 
 
 export async function DELETE(request, { params }) {
-  const { id } = params;
+  const { id } =await params;
 
   try {
     const userId = authenticateRequest(request); 

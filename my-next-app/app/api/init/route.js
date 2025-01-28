@@ -1,6 +1,7 @@
 import db from "../../../lib/db";
 
 export async function GET(req) {
+  //modify later as this is a security risk
   const queries = [
     `CREATE TABLE IF NOT EXISTS users (
       id INT AUTO_INCREMENT PRIMARY KEY, 
@@ -51,8 +52,16 @@ export async function GET(req) {
       accuracy DECIMAL(5,2) DEFAULT 0.00,
       xp INT DEFAULT 0,
       FOREIGN KEY (user_id) REFERENCES users(id)
-    );`,
-
+    )`,
+    `CREATE TABLE IF NOT EXISTS notifications (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  type ENUM('streak', 'system', 'feature', 'reminder') NOT NULL,
+  content TEXT NOT NULL,
+  is_read BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+)`,
   ];
   //last_login_date DATE
 

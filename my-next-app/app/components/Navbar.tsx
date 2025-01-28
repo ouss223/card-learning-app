@@ -5,9 +5,8 @@ import Image from "next/image";
 import { signOut, signIn, useSession } from "next-auth/react";
 import Notification from "./Notification";
 import { useRouter } from "next/navigation";
-import Cookies from 'js-cookie';
-import { useEffect } from 'react';
-
+import Cookies from "js-cookie";
+import { useEffect } from "react";
 
 import {
   Disclosure,
@@ -18,7 +17,30 @@ import {
   MenuItem,
   MenuItems,
 } from "@headlessui/react";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, XMarkIcon, BellIcon } from "@heroicons/react/24/outline";
+
+const temp_notifications = [
+  {
+    title: "New Card",
+    description: "A new card has been added to the official page to the official page to the offto the official pageicial page to the official page",
+  },
+  {
+    title: "New Card",
+    description: "A new card has been added to the official page",
+  },
+  {
+    title: "New Card",
+    description: "A new card has been added to the official page",
+  },
+  {
+    title: "New Card",
+    description: "A new card has been added to the official page",
+  },
+  {
+    title: "New Card",
+    description: "A new card has been added to the official page",
+  },
+];
 
 const Navbar = () => {
   const [notification, setNotification] = React.useState<boolean | null>(null);
@@ -27,36 +49,35 @@ const Navbar = () => {
   const router = useRouter();
   useEffect(() => {
     if (session) {
-      console.log('Session:', session);
-      const lastUpdated = Cookies.get('streakUpdated');
-      const today = new Date().toISOString().split('T')[0];
-      
+      console.log("Session:", session);
+      const lastUpdated = Cookies.get("streakUpdated");
+      const today = new Date().toISOString().split("T")[0];
+
       if (!lastUpdated || lastUpdated !== today) {
         const updateStreak = async () => {
           try {
             const response = await fetch(`/api/updateStreak`, {
-              method: 'PATCH',
-              credentials: 'include' ,
-              headers : {
+              method: "PATCH",
+              credentials: "include",
+              headers: {
                 authorization: `Bearer ${session.user.accessToken}`,
-              }
+              },
             });
 
-            
             if (response.ok) {
-              console.log('Streak updated successfully' , session);
+              console.log("Streak updated successfully", session);
               const expires = new Date();
               expires.setUTCHours(23, 0, 0, 0);
-              
-              Cookies.set('streakUpdated', today, {
+
+              Cookies.set("streakUpdated", today, {
                 expires: expires,
-                sameSite: 'lax',
-                path: '/',
-                secure: process.env.NODE_ENV === 'production',
+                sameSite: "lax",
+                path: "/",
+                secure: process.env.NODE_ENV === "production",
               });
             }
           } catch (error) {
-            console.error('Streak update failed:', error);
+            console.error("Streak update failed:", error);
           }
         };
 
@@ -66,7 +87,7 @@ const Navbar = () => {
   }, [session]);
 
   const handleSignOut = () => {
-    Cookies.remove('streakUpdated');
+    Cookies.remove("streakUpdated");
     signOut({ callbackUrl: "/" });
   };
 
@@ -82,9 +103,9 @@ const Navbar = () => {
       current: router.pathname === "/favorites",
     },
     {
-      name: "home",
-      href: "/home",
-      current: router.pathname === "/home",
+      name: "official",
+      href: "/official",
+      current: router.pathname === "/official",
     },
     {
       name: "community",
@@ -127,7 +148,7 @@ const Navbar = () => {
           </div>
           <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
             <div className="flex shrink-0 items-center">
-              <Link href="/" onClick={() => setPicked("home")}>
+              <Link href="/" onClick={() => setPicked("official")}>
                 <Image
                   src="https://upload.wikimedia.org/wikipedia/en/a/a9/TikTok_logo.svg"
                   alt="TikTok Logo"
@@ -143,11 +164,11 @@ const Navbar = () => {
                 {session?.user &&
                   navigation.map((item) => (
                     <Link
-                    onClick={() => setPicked(item.name)}
+                      onClick={() => setPicked(item.name)}
                       key={item.name}
                       href={item.href}
                       className={classNames(
-                        item.name === picked 
+                        item.name === picked
                           ? "bg-gray-900 text-gray-200 text-l "
                           : "text-gray-300 hover:bg-gray-700 hover:text-white",
                         "rounded-md px-3 py-2 text-sm font-medium"
@@ -162,48 +183,74 @@ const Navbar = () => {
           </div>
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
             {session?.user ? (
-              <Menu as="div" className="relative ml-3">
-                <div>
-                  <MenuButton className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-                    <span className="absolute -inset-1.5" />
-                    <span className="sr-only">Open user menu</span>
-                    <img
-                      className="h-8 w-8 rounded-full"
-                      src={session.user.image || ""}
-                      alt="User profile"
-                    />
+              <div className="flex">
+                <Menu>
+                  <MenuButton className="relative ml-auto shrink-0 rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden">
+                    <BellIcon aria-hidden="true" className="size-6" />
                   </MenuButton>
-                </div>
-                <MenuItems className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                  <MenuItem>
-                    {({ focus }) => (
-                      <Link
-                      onClick={() => setPicked("Profile")}
-                        href="/profile"
-                        className={classNames(
-                          focus ? "bg-gray-100" : "",
-                          "block px-4 py-2 text-sm text-gray-700"
+                  <MenuItems style={{width:"320px"}} className="absolute right-0 z-10 mt-10  origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    {temp_notifications.map((item, index) => (
+                      <MenuItem key={index}>
+                        {({ focus }) => (
+                          <div
+                            className={classNames(
+                              focus ? "bg-gray-100" : "",
+                              "block w-full text-left px-4 py-2 text-sm text-gray-700",
+                              "hover:bg-gray-200" 
+                            )}
+                          >
+                            {item.description}{" "}
+                          </div>
                         )}
-                      >
-                        Profile
-                      </Link>
-                    )}
-                  </MenuItem>
-                  <MenuItem>
-                    {({ focus }) => (
-                      <button
-                        onClick={() => setNotification(true)}
-                        className={classNames(
-                          focus ? "bg-gray-100" : "",
-                          "block w-full text-left px-4 py-2 text-sm text-gray-700"
-                        )}
-                      >
-                        Sign out
-                      </button>
-                    )}
-                  </MenuItem>
-                </MenuItems>
-              </Menu>
+                      </MenuItem>
+                    ))}
+                  </MenuItems>
+                </Menu>
+
+                <Menu as="div" className="relative ml-3">
+                  <div>
+                    <MenuButton className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                      <span className="absolute -inset-1.5" />
+                      <span className="sr-only">Open user menu</span>
+                      <img
+                        className="h-8 w-8 rounded-full"
+                        src={session.user.image || ""}
+                        alt="User profile"
+                      />
+                    </MenuButton>
+                  </div>
+
+                  <MenuItems className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    <MenuItem>
+                      {({ focus }) => (
+                        <Link
+                          onClick={() => setPicked("Profile")}
+                          href="/profile"
+                          className={classNames(
+                            focus ? "bg-gray-100" : "",
+                            "block px-4 py-2 text-sm text-gray-700"
+                          )}
+                        >
+                          Profile
+                        </Link>
+                      )}
+                    </MenuItem>
+                    <MenuItem>
+                      {({ focus }) => (
+                        <button
+                          onClick={() => setNotification(true)}
+                          className={classNames(
+                            focus ? "bg-gray-100" : "",
+                            "block w-full text-left px-4 py-2 text-sm text-gray-700"
+                          )}
+                        >
+                          Sign out
+                        </button>
+                      )}
+                    </MenuItem>
+                  </MenuItems>
+                </Menu>
+              </div>
             ) : (
               <button
                 onClick={() => router.push("/login")}

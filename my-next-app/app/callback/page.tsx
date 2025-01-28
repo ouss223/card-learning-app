@@ -37,7 +37,7 @@ const CallbackPage = () => {
       };
 
       registerUser();
-      router.push("/home"); 
+      router.push("/official"); 
     }
   }, [session, router]);
 

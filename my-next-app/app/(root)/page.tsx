@@ -93,7 +93,7 @@ export default function Hero() {
   const { data: session } = useSession();
   
     if (session) {
-      redirect('/home');
+      redirect('/official');
     }
   return (
     <>
