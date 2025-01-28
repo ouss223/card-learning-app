@@ -13,7 +13,7 @@ export async function GET(request, { params }) {
   `;
     } else if (type === "official") {
       getCardsQuery = `
-      select * from cards left join users on cards.user_id = users.id where users.role = 'admin'
+      select cards.* from cards left join users on cards.user_id = users.id where users.role = 'admin'
   `;
     } else {
       return NextResponse.json(

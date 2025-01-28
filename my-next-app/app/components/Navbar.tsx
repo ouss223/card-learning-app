@@ -87,6 +87,11 @@ const Navbar = () => {
       current: router.pathname === "/home",
     },
     {
+      name: "community",
+      href: "/community",
+      current: router.pathname === "/community",
+    },
+    {
       name: "create",
       href: "/cardAdd",
       current: router.pathname === "/cardAdd",
