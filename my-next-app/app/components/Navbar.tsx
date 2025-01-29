@@ -19,10 +19,6 @@ import {
 } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon, BellIcon } from "@heroicons/react/24/outline";
 
-
-
-
-
 const Navbar = () => {
   const [notification, setNotification] = React.useState<boolean | null>(null);
   const { data: session, status } = useSession();
@@ -87,10 +83,7 @@ const Navbar = () => {
       };
       retrieveNotifications();
     }
-
   }, [session]);
-
-
 
   const handleSignOut = () => {
     Cookies.remove("streakUpdated");
@@ -194,24 +187,47 @@ const Navbar = () => {
                   <MenuButton className="relative ml-auto shrink-0 rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden">
                     <BellIcon aria-hidden="true" className="size-6" />
                   </MenuButton>
-                  <MenuItems style={{width:"320px"}} className="absolute right-0 z-10 mt-10  origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <MenuItems
+                    style={{ width: "320px" }}
+                    className="absolute right-0 z-10 mt-10  origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                  >
                     {notifs.map((item, index) => (
-                     <MenuItem key={index}>
-                     {({ focus }) => (
-                       <div
-                         className={classNames(
-                           focus ? "bg-gray-100" : "",
-                           "block w-full text-left px-6 py-3 text-sm text-gray-700 rounded-md transition-colors duration-200",
-                           "hover:bg-gray-200 hover:text-gray-900"
-                         )}
-                       >
-                         <div className="font-semibold text-gray-800">{item.type} notification</div>
-                         <p className="text-gray-600 text-sm mt-1">{item.content}</p>
-                       </div>
-                     )}
-                   </MenuItem>
-                   
+                      <MenuItem key={index}>
+                        {({ focus }) => (
+                          <div
+                            className={classNames(
+                              focus ? "bg-gray-100" : "",
+                              "block w-full text-left px-6 py-3 text-sm text-gray-700 rounded-md transition-colors duration-200",
+                              "hover:bg-gray-200 hover:text-gray-900"
+                            )}
+                          >
+                            <div className="font-semibold text-gray-800">
+                              {item.type} notification
+                            </div>
+                            <p className="text-gray-600 text-sm mt-1">
+                              
+                            {item.content.length > 35 ? `${item.content.slice(0, 35)}...` : item.content}
+                            </p>
+                          </div>
+                        )}
+                      </MenuItem>
                     ))}
+                    <MenuItem>
+                      {({ focus }) => (
+                        <button
+                          onClick={() => router.push("/notifications")}
+                          className={classNames(
+                            focus ? "bg-gray-100 text-center " : "",
+                            "block w-full text-center border-t-2   px-6 py-2 text-sm text-gray-700 rounded-md transition-colors duration-200",
+                            "hover:bg-gray-200 hover:text-gray-900"
+                          )}
+                        >
+                          <div className="font-semibold  text-gray-800">
+                            view All notifications
+                          </div>
+                        </button>
+                      )}
+                    </MenuItem>
                   </MenuItems>
                 </Menu>
 
@@ -229,19 +245,22 @@ const Navbar = () => {
                   </div>
 
                   <MenuItems className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                  <MenuItem>
-                      {({ focus }) => (
-                        <button
-                          onClick={() => router.push("/addNotification")}
-                          className={classNames(
-                            focus ? "bg-gray-100" : "",
-                            "block w-full text-left px-4 py-2 text-sm text-gray-700"
-                          )}
-                        >
-                          add notification
-                        </button>
-                      )}
-                    </MenuItem>
+                    {session?.user?.role === "admin" && (
+                      <MenuItem>
+                        {({ focus }) => (
+                          <button
+                            onClick={() => router.push("/addNotification")}
+                            className={classNames(
+                              focus ? "bg-gray-100" : "",
+                              "block w-full text-left px-4 py-2 text-sm text-gray-700"
+                            )}
+                          >
+                            add notification
+                          </button>
+                        )}
+                      </MenuItem>
+                    )}
+
                     <MenuItem>
                       {({ focus }) => (
                         <Link
