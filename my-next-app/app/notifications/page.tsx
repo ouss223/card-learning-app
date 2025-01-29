@@ -2,11 +2,11 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import classNames from "classnames";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 interface Notification {
   type: string;
   content: string;
-  // Add additional fields as needed from your API response
 }
 
 const NotificationsPage = () => {
@@ -54,7 +54,26 @@ const NotificationsPage = () => {
       </div>
     );
   }
+  const handleDelete = async (id: string) => {
+    try {
+        console.log(id);
+      const response = await fetch(`/api/notifications/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${session.user.accessToken}`,
+        },
+      });
 
+      if (response.ok) {
+        const data = await response.json();
+        setNotifs((prevNotifs) => prevNotifs.filter((item) => item.id !== id));      } else {
+        console.error("Failed to delete notification");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -75,7 +94,7 @@ const NotificationsPage = () => {
                 <div
                   key={index}
                   className={classNames(
-                    "block w-full text-left px-6 py-4 transition-colors duration-200",
+                    "flex justify-between w-full text-left px-6 py-4 transition-colors duration-200",
                     "hover:bg-gray-50 focus:outline-none focus:bg-gray-50"
                   )}
                 >
@@ -107,6 +126,11 @@ const NotificationsPage = () => {
                         {item.created_at}
                       </div>
                     </div>
+                  </div>
+                  <div>
+                    <button onClick={()=>handleDelete(item.id)} className="hover:bg-slate-300 rounded-full p-1">
+                      <DeleteIcon className=" " color="primary" />
+                    </button>
                   </div>
                 </div>
               ))}

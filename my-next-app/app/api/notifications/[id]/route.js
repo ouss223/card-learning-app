@@ -6,7 +6,7 @@ export async function DELETE(request, { params }) {
   const { id } = await params;
 
   try {
-    userId = authenticateRequest(request);
+    const userId = authenticateRequest(request);
     const delQuery = `DELETE FROM notifications WHERE id = ? AND user_id = ?`;
     const result = await db.queryAsync(delQuery, [id, userId]);
     if(result.affectedRows === 0){
