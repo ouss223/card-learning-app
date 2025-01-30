@@ -4,10 +4,13 @@ import React, { useEffect } from "react";
 import Card from "../components/card";
 import Loading from "../components/loading";
 import { useSession } from "next-auth/react";
+import Edit from "../cardAdd/page";
 const Home = () => {
   const [loading, setLoading] = React.useState(true);
   const [cards, setCards] = React.useState(null);
   const [Favorites, setFavorites] = React.useState([]);
+    const [isEditing,setIsEditing] = React.useState([false,0]);
+  
   const { data: session } = useSession();
 
   useEffect(() => {
@@ -45,6 +48,9 @@ const Home = () => {
       console.log(error);
     }
   }, [session]);
+  if(isEditing[0]){
+    return <Edit Current={isEditing[1]}/>
+  }
   
 
   return (
@@ -56,6 +62,8 @@ const Home = () => {
           {Array.from({ length: cards.length }).map((_, index) => (
             <Card
             delete_item={true}
+            setCards={setCards}
+            setIsEditing = {setIsEditing}
               key={index}
               data={cards[index]}
               isfavorited={() => {

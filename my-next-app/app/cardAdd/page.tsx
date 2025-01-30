@@ -7,9 +7,11 @@ import CardAddmini from "../components/cardAddmini";
 import { PlusIcon } from "@heroicons/react/16/solid";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-export default function Example() {
+import { set } from "sanity";
+export default function Example({ Current }) {
   const [agreed, setAgreed] = useState(false);
   const [i, seti] = useState(1);
+  const [ii, setii] = useState(1);
   const [words, setWords] = useState([["", ""]]);
   const [title, setTitle] = useState("");
   const [targetLanguage, setTargetLanguage] = useState("");
@@ -29,7 +31,13 @@ export default function Example() {
       targetLanguage,
       description,
       words,
+      edit: Boolean(Current)
+
+      
     };
+    if(Current){
+      cardData["id"] = Current;
+    }
 
     try {
       const response = await fetch("/api/addCard", {
@@ -43,7 +51,7 @@ export default function Example() {
 
       if (response.ok) {
         console.log("Card added successfully");
-        Router.push("/home");
+        Router.push("/community");
       } else {
         console.error("Failed to add card");
       }
@@ -51,6 +59,33 @@ export default function Example() {
       console.error("Error:", error);
     }
   };
+  React.useEffect(() => {
+    console.log(Current);
+    const fetchCardData = async (Current) => {
+      try {
+        console.log(session);
+        const res = await fetch(
+          `/api/getCard/${Current}?user_id=${session?.user?.id}`
+        );
+        if (!res.ok) throw new Error("Failed to fetch");
+
+        const data = await res.json();
+        setTitle(data.title);
+        setWords((data.cardData || []).map(subArray => subArray.slice(0, 2)));
+        setTargetLanguage(data.targetLanguage);
+        seti(data.cardData.length);
+        setii(data.cardData.length);
+
+
+        setDescription(data.description);
+      } catch (error) {
+        console.error("Fetch error:", error);
+      }
+    };
+    if (Current) {
+      fetchCardData(Current);
+    }
+  }, [Current,session]);
 
   return (
     <div className="   bg-white px-6 py-24 sm:py-32 lg:px-8 h-full">
@@ -156,8 +191,8 @@ export default function Example() {
         </div>
         <div>
           {Array.from({ length: i }, (_, j) => (
-            <div key={j}>
-              <CardAddmini index={j} words={words} setWords={setWords} />
+            <div key={j} >
+              <CardAddmini index={j} words={words} setWords={setWords} freezed={Boolean(j<=ii)} />
             </div>
           ))}
         </div>

@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import DeleteIcon from "@mui/icons-material/Delete";
-
+import EditIcon from "@mui/icons-material/Edit";
 import IconButton from "@mui/material/IconButton";
 import { useSession } from "next-auth/react";
-
+import Edit from "../cardAdd/page";
 interface CardProps {
   data: {
     title: string;
@@ -20,6 +20,8 @@ const Card: React.FC<CardProps> = ({
   isfavorited,
   setCards,
   delete_item,
+  setIsEditing,
+
 }) => {
   const [isFavorited, setIsFavorited] = useState(isfavorited);
   const { data: session } = useSession();
@@ -29,7 +31,6 @@ const Card: React.FC<CardProps> = ({
 
   const handleClick = async () => {
     if (isFavorited == true && setCards) {
-
       setCards((prev) => {
         console.log("prev", prev);
         return prev.filter((card) => card.id !== data.id);
@@ -86,6 +87,7 @@ const Card: React.FC<CardProps> = ({
     };
     del();
   };
+
 
   return (
     <div
@@ -155,14 +157,46 @@ const Card: React.FC<CardProps> = ({
             />
           </IconButton>
           {delete_item && (
-            <IconButton onClick={handleDelete}>
-              <DeleteIcon
+            <>
+              <IconButton
+                onClick={handleDelete}
                 style={{
-                  color: "gray",
-                  transition: "color 0.3s",
+                  padding: "4px",
+                  borderRadius: "50%",
+                  transition: "background-color 0.3s",
                 }}
-              />
-            </IconButton>
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#92969c66")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.backgroundColor = "transparent")
+                }
+              >
+                {" "}
+                <DeleteIcon
+                  style={{
+                    color: "gray",
+                    transition: "color 0.3s",
+                  }}
+                />
+              </IconButton>
+              <IconButton
+                onClick={() => setIsEditing([true, data.id])}
+                style={{
+                  padding: "4px",
+                  borderRadius: "50%",
+                  transition: "background-color 0.3s",
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#92969c66")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.backgroundColor = "transparent")
+                }
+              >
+                <EditIcon style={{ color: "gray" }} />
+              </IconButton>
+            </>
           )}
         </div>
       </div>
