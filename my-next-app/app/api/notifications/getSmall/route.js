@@ -16,8 +16,15 @@ export async function GET(request) {
         }
       );
     });
+    let isThereNew = false;
+    for(let i = 0; i < notifs.length; i++){
+      if(notifs[i].is_read == 0){
+        isThereNew = true;
+        break;
+      }
+    }
 
-    return NextResponse.json({ notifs });
+    return NextResponse.json({ notifs,new: isThereNew });
 
   } catch (error) {
     console.error("Database error:", error);

@@ -49,5 +49,30 @@ export async function POST(request) {
   }
 }
 
-
-
+export async function PATCH(request) {
+  try {
+    const userId = authenticateRequest(request);
+    const { notifs } = await request.json();
+    const updateNotifQuery = `
+    UPDATE notifications
+    SET is_read = 1
+    WHERE id = ?;
+  `;
+    for (let i = 0; i < notifs.length; i++) {
+      const notifResult = await new Promise((resolve, reject) => {
+        db.query(updateNotifQuery, [notifs[i].id], (err, result) =>
+          err ? reject(err) : resolve(result)
+        );
+      });
+    }
+    return NextResponse.json(
+      { message: "sucessfully set the notifs to read" }
+    );
+  } catch (error) {
+    console.error("Error in POST request:", error);
+    return NextResponse.json(
+      { message: "Error adding notif", error: error.message },
+      { status: 500 }
+    );
+  }
+}
