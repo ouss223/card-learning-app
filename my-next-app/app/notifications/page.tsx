@@ -14,7 +14,7 @@ const NotificationsPage = () => {
   const [notifs, setNotifs] = useState<Notification[]>([]);
 
   useEffect(() => {
-    if (status === "authenticated") {
+    if (session) {
       const retrieveNotifications = async () => {
         try {
           const response = await fetch("/api/notifications/getBig", {
@@ -34,10 +34,12 @@ const NotificationsPage = () => {
           console.error("Error:", error);
         }
       };
-
+      
       retrieveNotifications();
+      console.log("here comes : ",notifs);
     }
   }, [session, status]);
+  
 
   if (status === "loading") {
     return (

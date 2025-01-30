@@ -7,6 +7,7 @@ import Notification from "./Notification";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { useEffect } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 
 import {
   Disclosure,
@@ -24,6 +25,8 @@ const Navbar = () => {
   const { data: session, status } = useSession();
   const [picked, setPicked] = React.useState<boolean>("");
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [notifs, setNotifs] = React.useState<any>([]);
   const [neww, setNeww] = React.useState<boolean>(false);
   useEffect(() => {
@@ -85,7 +88,7 @@ const Navbar = () => {
       };
       retrieveNotifications();
     }
-  }, [session]);
+  }, [session,router,pathname]);
 
   const handleSignOut = () => {
     Cookies.remove("streakUpdated");
@@ -129,28 +132,26 @@ const Navbar = () => {
     return classes.filter(Boolean).join(" ");
   }
   const handleView = async () => {
-  try{
-    const response = await fetch("/api/notifications/", {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        authorization: `Bearer ${session.user.accessToken}`,
-      },
-      body: JSON.stringify({ notifs: notifs }),
-    });
+    try {
+      const response = await fetch("/api/notifications/", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${session.user.accessToken}`,
+        },
+        body: JSON.stringify({ notifs: notifs }),
+      });
 
-    if (response.ok) {
-      console.log("Viewed notifications");
-      setNeww(false);
-    } else {
-      console.error("Failed to view notifications");
+      if (response.ok) {
+        console.log("Viewed notifications");
+        setNeww(false);
+      } else {
+        console.error("Failed to view notifications");
+      }
+    } catch (error) {
+      console.error("Error:", error);
     }
-  }
-  catch (error) {
-    console.error("Error:", error);
-  
-  }
-  }
+  };
 
   return (
     <Disclosure as="nav" className="bg-gray-800 shadow-md">
@@ -209,7 +210,10 @@ const Navbar = () => {
             {session?.user ? (
               <div className="flex">
                 <Menu>
-                  <MenuButton onClick={()=>handleView()} className="relative ml-auto shrink-0 rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden">
+                  <MenuButton
+                    onClick={() => handleView()}
+                    className="relative ml-auto shrink-0 rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden"
+                  >
                     <BellIcon aria-hidden="true" className="size-6" />
                     {neww && (
                       <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>

@@ -1,7 +1,7 @@
 import db from "../../../../lib/db";
 import { NextResponse } from "next/server";
 import { authenticateRequest } from "../../authenticateRequest";
-
+//later specify how much per call
 export async function GET(request) {
   try {
     const userId = authenticateRequest(request);
@@ -14,6 +14,19 @@ export async function GET(request) {
           if (err) reject(err);
           else resolve(result.length ? result : []);
         }
+      );
+    });
+    //update is_read
+    const updateNotifQuery = `
+    UPDATE notifications
+    SET is_read = 1
+    WHERE user_id = ?;
+  `;
+    const notifResult = await new Promise((resolve, reject) => {
+      db.query(
+        updateNotifQuery,
+        [userId],
+        (err, result) => (err ? reject(err) : resolve(result))
       );
     });
 
