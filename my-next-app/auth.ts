@@ -83,11 +83,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         let id = user.id;
         let accessToken = user.accessToken;
         let role = user.role;
-        if (isNaN(parseInt(id, 10))) {
+        if ((typeof id !== 'number' || isNaN(Number(id)) ) && role != "admin") {
           const [idd] = await db.queryAsync(
           `SELECT id FROM users WHERE email = ?`, 
           [user.email]
           );
+          console.log("idd : " , idd);
           id = idd.id;
           role = "user";
           accessToken = jwt.sign(
@@ -110,6 +111,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return token;
     },
     async session({ session, token }) {
+      console.log("=== SESSION Callback ===");
+      console.log("user : " , token);
       session.user = {
         ...session.user,
         id: token.id,
