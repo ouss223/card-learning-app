@@ -2,9 +2,8 @@ import { NextResponse } from "next/server";
 import db from "../../../lib/db";
 import { authenticateRequest } from "../authenticateRequest";
 
-export async function POST(request) {
+export async function GET(request) {
   try {
-    const { searchQuery, page } = await request.json();
     const userId = authenticateRequest(request);
     const searchQueryQuery = `
             SELECT * FROM cards 
@@ -28,7 +27,7 @@ export async function POST(request) {
   } catch (error) {
     console.error("Error in POST request:", error);
     return NextResponse.json(
-      { message: "Error adding card", error: error.message },
+      { message: "Error retrieving cards", error: error.message },
       { status: 500 }
     );
   }
