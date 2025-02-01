@@ -1,0 +1,37 @@
+import { NextResponse } from "next/server";
+import db from "../../../lib/db";
+import { authenticateRequest } from "../authenticateRequest";
+
+export async function POST(request) {
+  try {
+    const { searchQuery} =
+      await request.json();
+    const userId = authenticateRequest(request);
+    const searchQueryQuery = `
+            SELECT * FROM cards 
+            WHERE title LIKE '%?%' OR description LIKE '%?%'
+            
+        `;
+    const searchResult = await new Promise((resolve, reject) => {
+        db.query(
+            searchQueryQuery,
+            [searchQuery, searchQuery],
+            (err, result) => (err ? reject(err) : resolve(result))
+        );
+        }
+    );
+    return NextResponse.json({
+      message: "Cards retrieved successfully",
+      searchResult
+    });
+
+
+   
+  } catch (error) {
+    console.error("Error in POST request:", error);
+    return NextResponse.json(
+      { message: "Error adding card", error: error.message },
+      { status: 500 }
+    );
+  }
+}
