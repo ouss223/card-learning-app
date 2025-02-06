@@ -93,8 +93,30 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           `SELECT id FROM users WHERE email = ?`, 
           [user.email]
           );
+          if (!idd) {
+            const insertResult = await db.queryAsync(
+              `INSERT INTO users (email, username) VALUES (?, ?)`,
+              [user.email, user.name] 
+            );
+        
+            const [newUser] = await db.queryAsync(
+              `SELECT id FROM users WHERE email = ?`,
+              [user.email]
+            );
+        
+            if (newUser) {
+              id = newUser.id; 
+              role = "user"; 
+            } else {
+              console.error("Failed to retrieve the new user's ID after insertion");
+              return token; 
+            }
+          }
+          else{
+            id = idd.id;
+
+          }
           console.log("idd : " , idd);
-          id = idd.id;
           role = "user";
           accessToken = jwt.sign(
             { userId: id.toString(),
