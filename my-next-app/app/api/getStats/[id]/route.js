@@ -56,6 +56,14 @@ export async function GET(request, { params }) {
           err ? reject(err) : resolve(result[0] || { daily_streak: 0 })
       );
     });
+    const countryBio = await new Promise((resolve, reject) => {
+      db.query(
+        `SELECT country, bio FROM users WHERE id = ?`,
+        [userId],
+        (err, result) =>
+          err ? reject(err) : resolve(result[0] || { country: "", bio: "" })
+      );
+    });
 
     return NextResponse.json({
       success: true,
@@ -65,6 +73,8 @@ export async function GET(request, { params }) {
         accuracy: Number(accuracy.toFixed(2)),
         xp,
       },
+      country: countryBio.country,
+      bio: countryBio.bio,
     });
   } catch (error) {
     console.error("Stats fetch/update error:", error);

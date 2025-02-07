@@ -1,25 +1,24 @@
 "use client";
 
 import React from "react";
-import { PaperClipIcon } from '@heroicons/react/20/solid';
+import { PaperClipIcon } from "@heroicons/react/20/solid";
 import { useSession } from "next-auth/react";
 //update the other parts later (the ones besides stats)
 export default function Profile() {
   const { data: session } = useSession();
   const [stats, setStats] = React.useState(null);
   React.useEffect(() => {
-    const getStats = async ()=>{
-
-      try{
-        if(!session) return;
+    const getStats = async () => {
+      try {
+        if (!session) return;
         const res = await fetch(`/api/getStats/${session?.user?.id}`);
         const data = await res.json();
         setStats(data.stats);
         console.log(data);
-      }catch(err){
+      } catch (err) {
         console.log(err);
       }
-    }
+    };
     getStats();
   }, [session]);
 
@@ -28,53 +27,51 @@ export default function Profile() {
   }
 
   return (
-    <div 
+    <div
       className=" p-8 w-full min-h-screen pt-20"
       style={{
-        background: 'linear-gradient(145deg, #1e2b3a 0%, #2a3f54 100%)',
-        boxShadow: '0 8px 24px rgba(0,0,0,0.15)'
+        background: "linear-gradient(145deg, #1e2b3a 0%, #2a3f54 100%)",
+        boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
       }}
     >
       <div className="px-4 sm:px-0 mb-8">
-        <h3 
-          className="text-2xl font-bold"
-          style={{ color: '#7fcac9' }}
-        >
+        <h3 className="text-2xl font-bold" style={{ color: "#7fcac9" }}>
           User Profile
         </h3>
-        <p 
+        <p
           className="mt-2 text-sm opacity-80"
-          style={{ color: 'rgba(255,255,255,0.7)' }}
+          style={{ color: "rgba(255,255,255,0.7)" }}
         >
           Personal details and account information
         </p>
       </div>
-      
-      <div 
+
+      <div
         className="mt-6 border-t"
-        style={{ borderColor: 'rgba(127,202,201,0.1)' }}
+        style={{ borderColor: "rgba(127,202,201,0.1)" }}
       >
-        <dl className="" style={{ borderColor: 'rgba(127,202,201,0.1)' }}>
+        <dl className="" style={{ borderColor: "rgba(127,202,201,0.1)" }}>
           {[
-            { label: 'Full name', value: session.user?.name },
-            { label: 'Username', value: 'LangLearner123' },
-            { label: 'Email address', value: session.user?.email },
-            { label: 'Learning Streak', value: '14 days' },
-            { label: 'Total Cards Mastered', value: '237' },
+            { label: "Username", value: session.user?.name },
+
+            { label: "Email address", value: session.user?.email },
+            { label: "Country", value: stats?.country },
+
+            { label: "Learning Streak", value: `${stats?.dailyStreak} days` },
           ].map((item, idx) => (
-            <div 
+            <div
               key={idx}
               className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0 hover:bg-white/5 transition-colors rounded-lg"
             >
-              <dt 
+              <dt
                 className="text-sm font-medium"
-                style={{ color: 'rgba(255,255,255,0.8)' }}
+                style={{ color: "rgba(255,255,255,0.8)" }}
               >
                 {item.label}
               </dt>
-              <dd 
+              <dd
                 className="mt-1 text-sm sm:col-span-2 sm:mt-0"
-                style={{ color: '#7fcac9' }}
+                style={{ color: "#7fcac9" }}
               >
                 {item.value}
               </dd>
@@ -82,27 +79,26 @@ export default function Profile() {
           ))}
 
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-            <dt 
+            <dt
               className="text-sm font-medium"
-              style={{ color: 'rgba(255,255,255,0.8)' }}
+              style={{ color: "rgba(255,255,255,0.8)" }}
             >
               Bio
             </dt>
-            <dd 
+            <dd
               className="mt-1 text-sm sm:col-span-2 sm:mt-0"
-              style={{ color: 'rgba(255,255,255,0.7)' }}
+              style={{ color: "rgba(255,255,255,0.7)" }}
             >
               <div className="space-y-4">
                 <p>
-                  Passionate language learner currently mastering Spanish and dabbling in Japanese. 
-                  Created 15 custom card sets with over 500 words. Daily streak maintained for 2 weeks!
+                {stats?.bio}
                 </p>
                 <div className="flex items-center gap-2 text-sm">
-                  <PaperClipIcon 
+                  <PaperClipIcon
                     className="h-5 w-5 flex-none"
-                    style={{ color: '#7fcac9' }}
+                    style={{ color: "#7fcac9" }}
                   />
-                  <span style={{ color: '#7fcac9' }}>
+                  <span style={{ color: "#7fcac9" }}>
                     lang_learner_achievements.pdf
                   </span>
                 </div>
@@ -112,25 +108,32 @@ export default function Profile() {
         </dl>
       </div>
 
-      <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <div className="mt-24 grid grid-cols-2 gap-4 sm:grid-cols-4">
         {[
-          { label: 'daily Streak', value: stats?.dailyStreak, unit: 'days' },
-          { label: 'total Terms Learned', value: stats?.totalTermsLearned, unit: 'words' },
-          { label: 'accuracy', value: stats?.accuracy, unit: '%' },
-          { label: 'xp', value: stats?.xp, unit: 'points' },
+          { label: "daily Streak", value: stats?.dailyStreak, unit: "days" },
+          {
+            label: "total Terms Learned",
+            value: stats?.totalTermsLearned,
+            unit: "words",
+          },
+          { label: "accuracy", value: stats?.accuracy, unit: "%" },
+          { label: "xp", value: stats?.xp, unit: "points" },
         ].map((stat, idx) => (
-          <div 
+          <div
             key={idx}
             className="p-4 rounded-lg text-center"
             style={{
-              background: 'rgba(127,202,201,0.1)',
-              border: '1px solid rgba(127,202,201,0.2)'
+              background: "rgba(127,202,201,0.1)",
+              border: "1px solid rgba(127,202,201,0.2)",
             }}
           >
-            <div style={{ color: '#7fcac9' }} className="text-2xl font-bold">
+            <div style={{ color: "#7fcac9" }} className="text-2xl font-bold">
               {stat.value} {stat.unit}
             </div>
-            <div style={{ color: 'rgba(255,255,255,0.7)' }} className="text-sm mt-1">
+            <div
+              style={{ color: "rgba(255,255,255,0.7)" }}
+              className="text-sm mt-1"
+            >
               {stat.label}
             </div>
           </div>

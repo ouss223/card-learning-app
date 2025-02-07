@@ -11,7 +11,9 @@ export async function GET(req) {
       updated_at TIMESTAMP DEFAULT NOW(),
       created_at TIMESTAMP DEFAULT NOW(),
       image VARCHAR(511),
-      role ENUM('user', 'admin') DEFAULT 'user'
+      role ENUM('user', 'admin') DEFAULT 'user',
+      bio TEXT DEFAULT NULL,
+      country VARCHAR(100) DEFAULT NULL,
     )`,
     `CREATE TABLE IF NOT EXISTS cards (
       id INT AUTO_INCREMENT PRIMARY KEY, 
