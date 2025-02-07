@@ -4,7 +4,7 @@ import { authenticateRequest } from "../authenticateRequest";
 
 export async function POST(request) {
   try {
-    const { title, targetLanguage, description, words, edit, id } =
+    const { title, targetLanguage, description, words, edit, id,garbageCollector } =
       await request.json();
     const userId = authenticateRequest(request);
 
@@ -17,22 +17,57 @@ export async function POST(request) {
     if (edit) {
       const updateCardQuery = `
             UPDATE cards
-            SET title = ?, target_language = ?, description = ?
+            SET title = ?, target_language = ?, description = ?,total_words = ?
             WHERE id = ? AND user_id = ?
             `;
+      const new_size = words.length;
+      console.log(new_size);
       const cardResult = await new Promise((resolve, reject) => {
         db.query(
           updateCardQuery,
-          [title, targetLanguage, description, id, userId],
+          [title, targetLanguage, description,new_size, id, userId],
           (err, result) => (err ? reject(err) : resolve(result))
         );
       });
 
-      const insertQuery = `INSERT INTO words (word, translated_word, card_id) VALUES (?, ?, ?)`;
-
       for (const word of words) {
+        if (typeof word[2] === 'number') {
+          const updateWordQuery = `
+            UPDATE words
+            JOIN cards ON words.card_id = cards.id
+            SET word = ?, translated_word = ?
+            WHERE words.id = ? 
+              AND cards.user_id = ? 
+              AND words.card_id = ?
+          `;
+          await new Promise((resolve, reject) => {
+            db.query(
+              updateWordQuery,
+              [word[0], word[1], word[2], userId, id],
+              (err, result) => (err ? reject(err) : resolve(result))
+            );
+          });
+        } else {
+          const insertQuery = `INSERT INTO words (word, translated_word, card_id) VALUES (?, ?, ?)`;
+          await new Promise((resolve, reject) => {
+            db.query(insertQuery, [word[0], word[1], id], (err, result) =>
+              err ? reject(err) : resolve(result)
+            );
+          });
+        }
+        
+      }
+      for(const idd of garbageCollector){
+      const deleteQuery1 = `DELETE FROM user_progress WHERE word_id = ?`;
+        const deleteQuery2 = `DELETE FROM words WHERE id = ?`;
         await new Promise((resolve, reject) => {
-          db.query(insertQuery, [word[0], word[1], id], (err, result) =>
+          db.query(deleteQuery1, [idd], (err, result) =>
+            err ? reject(err) : resolve(result)
+          );
+        });
+
+        await new Promise((resolve, reject) => {
+          db.query(deleteQuery2, [idd], (err, result) =>
             err ? reject(err) : resolve(result)
           );
         });

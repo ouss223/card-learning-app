@@ -7,17 +7,20 @@ import CardAddmini from "../components/cardAddmini";
 import { PlusIcon } from "@heroicons/react/16/solid";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { set } from "sanity";
+import DeleteIcon from "@mui/icons-material/Delete";
+
 export default function Example({ Current }) {
   const [agreed, setAgreed] = useState(false);
   const [i, seti] = useState(1);
   const [ii, setii] = useState(1);
-  const [words, setWords] = useState([["", ""]]);
+  const [words, setWords] = useState([["", "",""]]);
   const [title, setTitle] = useState("");
   const [targetLanguage, setTargetLanguage] = useState("");
   const [description, setDescription] = useState("");
+  const [garbageCollector, setGarbageCollector] = useState([]);
   const { data: session } = useSession();
   const Router = useRouter();
+  console.log("current : ",Current);
 
   useEffect(() => {
     console.log(words);
@@ -31,15 +34,18 @@ export default function Example({ Current }) {
       targetLanguage,
       description,
       words,
-      edit: Boolean(Current)
+      edit: Boolean(Current),
+      garbageCollector: garbageCollector,
 
       
     };
     if(Current){
       cardData["id"] = Current;
     }
+    
 
     try {
+      console.log(cardData);
       const response = await fetch("/api/addCard", {
         method: "POST",
         headers: {
@@ -71,10 +77,11 @@ export default function Example({ Current }) {
 
         const data = await res.json();
         setTitle(data.title);
-        setWords((data.cardData || []).map(subArray => subArray.slice(0, 2)));
+        setWords((data.cardData || []).map(subArray => subArray.slice(0, 3)));
         setTargetLanguage(data.targetLanguage);
         seti(data.cardData.length);
         setii(data.cardData.length);
+        console.log(data);
 
 
         setDescription(data.description);
@@ -192,7 +199,7 @@ export default function Example({ Current }) {
         <div>
           {Array.from({ length: i }, (_, j) => (
             <div key={j} >
-              <CardAddmini index={j} words={words} setWords={setWords} freezed={Boolean(j<=ii)} />
+              <CardAddmini index={j} words={words} setWords={setWords} seti={seti}  setGarbageCollector={setGarbageCollector} />
             </div>
           ))}
         </div>
