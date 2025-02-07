@@ -18,7 +18,7 @@ export async function GET(request, { params }) {
           [userId],
           (err, result) => (err ? reject(err) : resolve(result[0] || {}))
         );
-      }), 
+      }),
     ]);
 
     const totalTermsLearned = progressData.learned_terms || 0;
@@ -43,7 +43,7 @@ export async function GET(request, { params }) {
           accuracy = VALUES(accuracy),
           xp = VALUES(xp)
       `,
-        [userId, totalTermsLearned,  accuracy, xp],
+        [userId, totalTermsLearned, accuracy, xp],
         (err) => (err ? reject(err) : resolve())
       );
     });
@@ -72,9 +72,9 @@ export async function GET(request, { params }) {
         totalTermsLearned,
         accuracy: Number(accuracy.toFixed(2)),
         xp,
+        country: countryBio.country,
+        bio: countryBio.bio,
       },
-      country: countryBio.country,
-      bio: countryBio.bio,
     });
   } catch (error) {
     console.error("Stats fetch/update error:", error);

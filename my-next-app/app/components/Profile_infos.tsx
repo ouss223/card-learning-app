@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 export default function Profile() {
   const { data: session } = useSession();
   const [stats, setStats] = React.useState(null);
+  const [editIndex, setEditIndex] = React.useState([false, false, false]);
   React.useEffect(() => {
     const getStats = async () => {
       try {
@@ -91,7 +92,27 @@ export default function Profile() {
             >
               <div className="space-y-4">
                 <p>
-                {stats?.bio}
+                  {editIndex[2] ? (
+                    <>
+                      <textarea
+                        className="w-full h-20 text-black p-2 rounded-lg"
+                        placeholder="Write a short bio about yourself"
+                      ></textarea>
+                      <button  className="bg-black px-2 rounded-full">submit</button>
+                    </>
+                  ) : (
+                    ""
+                  )}
+                  {stats?.bio == null && editIndex[2] == false ? (
+                    <button
+                      className="bg-black px-2 rounded-full"
+                      onClick={() => setEditIndex([false, false, true])}
+                    >
+                      add bio
+                    </button>
+                  ) : (
+                    stats?.bio
+                  )}
                 </p>
                 <div className="flex items-center gap-2 text-sm">
                   <PaperClipIcon
