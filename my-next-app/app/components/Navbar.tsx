@@ -126,6 +126,7 @@ const Navbar = () => {
       href: "/created",
       current: router.pathname === "/created",
     },
+    
   ];
 
   function classNames(...classes: string[]) {
@@ -305,6 +306,19 @@ const Navbar = () => {
                           )}
                         >
                           Profile
+                        </Link>
+                      )}
+                    </MenuItem>
+                    <MenuItem>
+                      {({ focus }) => (
+                        <Link
+                          href="/leaderboard"
+                          className={classNames(
+                            focus ? "bg-gray-100" : "",
+                            "block px-4 py-2 text-sm text-gray-700"
+                          )}
+                        >
+                          leaderboard
                         </Link>
                       )}
                     </MenuItem>
