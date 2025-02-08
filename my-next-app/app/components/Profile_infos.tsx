@@ -3,10 +3,13 @@
 import React from "react";
 import { PaperClipIcon } from "@heroicons/react/20/solid";
 import { useSession } from "next-auth/react";
+import { set } from "sanity";
 //update the other parts later (the ones besides stats)
 export default function Profile() {
   const { data: session } = useSession();
-  const [stats, setStats] = React.useState(null);
+  const [stats, setStats] = React.useState("");
+  const [edited, setEdited] = React.useState("");
+  const [country, setCountry] = React.useState(null);
   const [editIndex, setEditIndex] = React.useState([false, false, false]);
   React.useEffect(() => {
     const getStats = async () => {
@@ -22,6 +25,34 @@ export default function Profile() {
     };
     getStats();
   }, [session]);
+
+  const handleSubmit = async (field) =>
+  {
+    const updateField = async (field) =>
+    {
+      try {
+        const res = await fetch(`/api/updateInfos/profile`, {
+          method: "POST",
+          headers: {
+            authorization: `Bearer ${session.user.accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ field: field,value :edited }),
+        });
+        const data = await res.json();
+        console.log(data);
+        setEditIndex((prev)=>[prev[0],prev[1], false]);
+      } catch (err) {
+        console.log(err);
+      }
+
+    }
+    if(field=="bio" || field=="country")
+    {
+      updateField(field);
+    }
+    
+  }
 
   if (!session) {
     return <div className="text-gray-300">Loading...</div>;
@@ -97,8 +128,10 @@ export default function Profile() {
                       <textarea
                         className="w-full h-20 text-black p-2 rounded-lg"
                         placeholder="Write a short bio about yourself"
+                        onChange={(e) => setEdited(e.target.value)}
+                        value={edited}
                       ></textarea>
-                      <button  className="bg-black px-2 rounded-full">submit</button>
+                      <button onClick={()=>handleSubmit("bio")}  className="bg-black px-2 rounded-full">submit</button>
                     </>
                   ) : (
                     ""
