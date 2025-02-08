@@ -3,14 +3,24 @@
 import React from "react";
 import { PaperClipIcon } from "@heroicons/react/20/solid";
 import { useSession } from "next-auth/react";
-import { set } from "sanity";
+
+import EditIcon from "@mui/icons-material/Edit";
+
 //update the other parts later (the ones besides stats)
 export default function Profile() {
   const { data: session } = useSession();
   const [stats, setStats] = React.useState("");
   const [edited, setEdited] = React.useState("");
   const [country, setCountry] = React.useState(null);
-  const [editIndex, setEditIndex] = React.useState([false, false, false]);
+  const [editIndex, setEditIndex] = React.useState([
+    false,
+    false,
+    false,
+    false,
+    false,
+  ]);
+  const countries = ["United States", "Germany", "Japan", "Canada"];
+
   React.useEffect(() => {
     const getStats = async () => {
       try {
@@ -26,10 +36,8 @@ export default function Profile() {
     getStats();
   }, [session]);
 
-  const handleSubmit = async (field) =>
-  {
-    const updateField = async (field) =>
-    {
+  const handleSubmit = async (field) => {
+    const updateField = async (field) => {
       try {
         const res = await fetch(`/api/updateInfos/profile`, {
           method: "POST",
@@ -37,25 +45,26 @@ export default function Profile() {
             authorization: `Bearer ${session.user.accessToken}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ field: field,value :edited }),
+          body: JSON.stringify({ field: field, value: edited }),
         });
         const data = await res.json();
         console.log(data);
-        setEditIndex((prev)=>[prev[0],prev[1], false]);
+        setEditIndex((prev) => [prev[0], prev[1], false]);
       } catch (err) {
         console.log(err);
       }
-
-    }
-    if(field=="bio" || field=="country")
-    {
+    };
+    if (field == "bio" || field == "country") {
       updateField(field);
     }
-    
-  }
+  };
 
-  if (!session) {
-    return <div className="text-gray-300">Loading...</div>;
+  if (!session || !stats) {
+    return (
+      <div className="w-full h-screen flex justify-center items-center">
+        <div className="w-1/4 aspect-square border-4 border-t-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
+      </div>
+    );
   }
 
   return (
@@ -84,9 +93,9 @@ export default function Profile() {
       >
         <dl className="" style={{ borderColor: "rgba(127,202,201,0.1)" }}>
           {[
-            { label: "Username", value: session.user?.name },
+            { label: "Username", value: session?.user?.name },
 
-            { label: "Email address", value: session.user?.email },
+            { label: "Email address", value: session?.user?.email },
             { label: "Country", value: stats?.country },
 
             { label: "Learning Streak", value: `${stats?.dailyStreak} days` },
@@ -105,7 +114,45 @@ export default function Profile() {
                 className="mt-1 text-sm sm:col-span-2 sm:mt-0"
                 style={{ color: "#7fcac9" }}
               >
-                {item.value}
+                {editIndex[idx] ? (
+                  idx === 2 ? (
+                    <div className="flex items-center gap-2">
+                      <select className="text-black p-2 rounded-lg">
+                        {countries.map((country, index) => (
+                          <option key={index} value={country}>
+                            {country}
+                          </option>
+                        ))}
+                      </select>
+                      <button className="bg-black px-2 rounded-full">
+                        submit
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        className="w-full text-black p-2 rounded-lg"
+                        placeholder={`Enter ${item.label.toLowerCase()}`}
+                      />
+                      <button className="bg-black px-2 rounded-full">
+                        submit
+                      </button>
+                    </div>
+                  )
+                ) : (
+                  <>
+                    {item.value}{" "}
+                    {(idx == 0 || idx == 2) && (
+                      <EditIcon
+                        onClick={() =>
+                          setEditIndex((prev) => prev.map((_, i) => i === idx))
+                        }
+                        className="cursor-pointer ml-5"
+                      />
+                    )}
+                  </>
+                )}
               </dd>
             </div>
           ))}
@@ -123,7 +170,7 @@ export default function Profile() {
             >
               <div className="space-y-4">
                 <p>
-                  {editIndex[2] ? (
+                  {editIndex[4] ? (
                     <>
                       <textarea
                         className="w-full h-20 text-black p-2 rounded-lg"
@@ -131,15 +178,22 @@ export default function Profile() {
                         onChange={(e) => setEdited(e.target.value)}
                         value={edited}
                       ></textarea>
-                      <button onClick={()=>handleSubmit("bio")}  className="bg-black px-2 rounded-full">submit</button>
+                      <button
+                        onClick={() => handleSubmit("bio")}
+                        className="bg-black px-2 rounded-full"
+                      >
+                        submit
+                      </button>
                     </>
                   ) : (
                     ""
                   )}
-                  {stats?.bio == null && editIndex[2] == false ? (
+                  {stats?.bio == null && editIndex[4] == false ? (
                     <button
                       className="bg-black px-2 rounded-full"
-                      onClick={() => setEditIndex([false, false, true])}
+                      onClick={() =>
+                        setEditIndex((prev) => prev.map((_, i) => i === 4))
+                      }
                     >
                       add bio
                     </button>
