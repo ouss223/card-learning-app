@@ -10,7 +10,7 @@ const Learning = () => {
   const [index, setIndex] = React.useState(0);
   const [side, setSide] = React.useState(0);
   const [loading, setLoading] = React.useState(true);
-  const [terms, setTerms] = React.useState<string[][][][]>([]);//word/translated/id/learned?
+  const [terms, setTerms] = React.useState<string[][][][]>([]); //word/translated/id/learned?
   const [title, setTitle] = React.useState("");
   const [description, setDescription] = React.useState("");
   const { data: session } = useSession();
@@ -21,14 +21,16 @@ const Learning = () => {
     const fetchCardData = async () => {
       try {
         console.log(session);
-        const res = await fetch(`/api/getCard/${id}?user_id=${session?.user?.id}`);
+        const res = await fetch(
+          `/api/getCard/${id}?user_id=${session?.user?.id}`
+        );
         if (!res.ok) throw new Error("Failed to fetch");
 
         const data = await res.json();
         setTitle(data.title);
         setTerms(data.cardData || []);
         setTerms((prev) => [...prev, ["done", "done", "done", "done"]]);
-        
+
         setDescription(data.description);
       } catch (error) {
         console.error("Fetch error:", error);
@@ -36,10 +38,9 @@ const Learning = () => {
         setLoading(false);
       }
     };
-    
 
     fetchCardData();
-  }, [id,session]);
+  }, [id, session]);
   const HandleButtonPress = (action: string, know: boolean): void => {
     const sendProgress = async () => {
       try {
@@ -115,49 +116,58 @@ const Learning = () => {
         </span>
       </div>
 
-      <div className="flex items-center gap-8 mt-12">
+      <div className="flex items-center justify-center gap-8 mt-12">
         <button
           onClick={() => HandleButtonPress("add", false)}
           disabled={index === terms.length - 1}
-          className="p-3 rounded-full transition-all"
+          className={`
+      p-4 rounded-full transition-all
+      flex items-center justify-center
+      hover:scale-105 active:scale-95
+      focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500
+      disabled:opacity-50 disabled:cursor-not-allowed
+    `}
           style={{
-            background: "rgba(127,202,201,0.1)",
-            opacity: index === terms.length - 1 ? 0.5 : 1,
-            cursor: index === terms.length - 1 ? "not-allowed" : "pointer",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+            background: "rgba(239, 68, 68, 0.1)", 
+            boxShadow: "0 4px 12px rgba(239, 68, 68, 0.2)",
           }}
         >
-          dunno 🔴
+          <span className="text-red-500 text-lg font-semibold">Dunno 🔴</span>
         </button>
 
         <span
-          className="text-xl font-medium"
+          className="text-xl font-medium text-white/80"
           style={{
-            color: "rgba(255,255,255,0.8)",
             minWidth: "100px",
             textAlign: "center",
           }}
         >
-          {Math.min(index + 1,terms.length -1)} / {terms.length-1}
+          {Math.min(index + 1, terms.length - 1)} / {terms.length - 1}
         </span>
 
         <button
           onClick={() => HandleButtonPress("add", true)}
           disabled={index === terms.length - 1}
-          className="p-3 rounded-full transition-all"
+          className={`
+      p-4 rounded-full transition-all
+      flex items-center justify-center
+      hover:scale-105 active:scale-95
+      focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500
+      disabled:opacity-50 disabled:cursor-not-allowed
+    `}
           style={{
-            background: "rgba(127,202,201,0.1)",
-            opacity: index === terms.length - 1 ? 0.5 : 1,
-            cursor: index === terms.length - 1 ? "not-allowed" : "pointer",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+            background: "rgba(34, 197, 94, 0.1)", 
+            boxShadow: "0 4px 12px rgba(34, 197, 94, 0.2)",
           }}
         >
-          know✅
+          <span className="text-green-500 text-lg font-semibold">Know ✅</span>
         </button>
       </div>
       <div>
-      <button
-          onClick={() => setIndex((prev) => Math.min(prev -1, terms.length - 1))}
+        <button
+          onClick={() =>
+            setIndex((prev) => Math.min(prev - 1, terms.length - 1))
+          }
           disabled={index === 0}
           className="p-3 rounded-full transition-all"
           style={{
@@ -167,10 +177,9 @@ const Learning = () => {
             boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
           }}
         >
-      <FaArrowLeft className="h-8 w-8" style={{ color: "#7fcac9" }} />
-      </button>
+          <FaArrowLeft className="h-8 w-8" style={{ color: "#7fcac9" }} />
+        </button>
       </div>
-
     </div>
   );
 };

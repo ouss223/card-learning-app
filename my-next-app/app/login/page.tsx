@@ -124,13 +124,13 @@ export default function Example() {
             </Link>
           </p>
 
-          <div className="border-t mt-10  flex-col text-gray-400    border-black  pt-10 text-gray-900 flex justify-center items-center">
+          <div className="border-t mt-10 space-y-4  flex-col text-gray-400    border-black  pt-10 text-gray-900 flex justify-center items-center">
             <button
               onClick={handleSignInGithub}
               onMouseEnter={() => setIsHovered((prev)=>[true,prev[1]])}
               onMouseLeave={() => setIsHovered((prev)=>[false,prev[1]])}
               style={{
-                backgroundColor: isHovered[0] ? "#9ca3af" : "white",
+                backgroundColor: isHovered[0] ? "#f0f0f0" : "white",
                 color: "#111827",
                 border: "1px solid #e5e7eb",
                 padding: "0.375rem 0.75rem",

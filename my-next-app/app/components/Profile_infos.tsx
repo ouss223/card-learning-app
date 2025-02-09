@@ -2,13 +2,13 @@
 
 import React from "react";
 import { PaperClipIcon } from "@heroicons/react/20/solid";
-import { useSession } from "next-auth/react";
+import { useSession, updateSession } from "next-auth/react";
 
 import EditIcon from "@mui/icons-material/Edit";
 
 //update the other parts later (the ones besides stats)
 export default function Profile() {
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
   const [stats, setStats] = React.useState("");
   const [edited, setEdited] = React.useState("");
   const [country, setCountry] = React.useState(null);
@@ -49,12 +49,25 @@ export default function Profile() {
         });
         const data = await res.json();
         console.log(data);
-        setEditIndex((prev) => [prev[0], prev[1], false]);
+        setEditIndex([false, false, false, false, false]);
+
+        if (field === "username") {
+          console.log("Updating username to:", edited);
+          await update({
+            ...session,
+            user: {
+              ...session.user,
+              name: edited,
+            },
+          });
+          console.log("Session after update:", session);
+        }
+        setEdited("");
       } catch (err) {
         console.log(err);
       }
     };
-    if (field == "bio" || field == "country") {
+    if (field == "bio" || field == "country" || field == "username") {
       updateField(field);
     }
   };
@@ -117,25 +130,37 @@ export default function Profile() {
                 {editIndex[idx] ? (
                   idx === 2 ? (
                     <div className="flex items-center gap-2">
-                      <select className="text-black p-2 rounded-lg">
+                      <select
+                        className="text-black p-2 rounded-lg"
+                        onChange={(e) => setEdited(e.target.value)}
+                        value={edited}
+                      >
                         {countries.map((country, index) => (
                           <option key={index} value={country}>
                             {country}
                           </option>
                         ))}
                       </select>
-                      <button className="bg-black px-2 rounded-full">
+                      <button
+                        onClick={() => handleSubmit(item.label.toLowerCase())}
+                        className="bg-black px-2 rounded-full"
+                      >
                         submit
                       </button>
                     </div>
                   ) : (
                     <div className="flex items-center gap-2">
                       <input
+                        onChange={(e) => setEdited(e.target.value)}
+                        value={edited}
                         type="text"
                         className="w-full text-black p-2 rounded-lg"
                         placeholder={`Enter ${item.label.toLowerCase()}`}
                       />
-                      <button className="bg-black px-2 rounded-full">
+                      <button
+                        onClick={() => handleSubmit(item.label.toLowerCase())}
+                        className="bg-black px-2 rounded-full"
+                      >
                         submit
                       </button>
                     </div>
@@ -198,7 +223,15 @@ export default function Profile() {
                       add bio
                     </button>
                   ) : (
-                    stats?.bio
+                    <>
+                      {stats?.bio}
+                      <EditIcon
+                        onClick={() =>
+                          setEditIndex((prev) => prev.map((_, i) => i === 4))
+                        }
+                        className="cursor-pointer ml-5"
+                      />
+                    </>
                   )}
                 </p>
                 <div className="flex items-center gap-2 text-sm">

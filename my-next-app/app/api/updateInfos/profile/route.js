@@ -8,7 +8,7 @@ export async function POST(request, { params }) {
   try {
     const { field, value } = await request.json();
 
-    const allowedFields = ["bio", "country"]; 
+    const allowedFields = ["bio", "country","username"]; 
     if (!allowedFields.includes(field)) {
       return NextResponse.json(
         { error: "Invalid field" },
