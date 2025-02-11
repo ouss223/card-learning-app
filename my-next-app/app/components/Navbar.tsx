@@ -18,7 +18,12 @@ import {
   MenuItem,
   MenuItems,
 } from "@headlessui/react";
-import { Bars3Icon, XMarkIcon, BellIcon } from "@heroicons/react/24/outline";
+import {
+  Bars3Icon,
+  XMarkIcon,
+  BellIcon,
+  MagnifyingGlassIcon,
+} from "@heroicons/react/24/outline";
 
 const Navbar = () => {
   const [notification, setNotification] = React.useState<boolean | null>(null);
@@ -29,6 +34,8 @@ const Navbar = () => {
   const searchParams = useSearchParams();
   const [notifs, setNotifs] = React.useState<any>([]);
   const [neww, setNeww] = React.useState<boolean>(false);
+  const [searchAppear, setSearchAppear] = React.useState<boolean>(false);
+  const [search, setSearch] = React.useState<string>("");
   useEffect(() => {
     if (session) {
       console.log("Session:", session);
@@ -88,7 +95,7 @@ const Navbar = () => {
       };
       retrieveNotifications();
     }
-  }, [session,router,pathname]);
+  }, [session, router, pathname]);
 
   const handleSignOut = () => {
     Cookies.remove("streakUpdated");
@@ -126,7 +133,6 @@ const Navbar = () => {
       href: "/created",
       current: router.pathname === "/created",
     },
-    
   ];
 
   function classNames(...classes: string[]) {
@@ -153,9 +159,64 @@ const Navbar = () => {
       console.error("Error:", error);
     }
   };
+  const handleSearch = async () => {
+    try {
+      const response = await fetch(
+        `/api/search?searchQuery=${search}&page=1`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.user.accessToken}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        console.error("Failed to search");
+        return;
+      }
+
+      console.log("Search success");
+      const data = await response.json();
+      console.log(data);
+      router.push(`/search/${search}`);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   return (
-    <Disclosure as="nav" className="bg-gray-800 shadow-md">
+    <Disclosure as="nav" className="bg-gray-800 shadow-md relative">
+      {searchAppear && (
+        <div className="absolute text-black left-0 top-14 w-full h-full bg-opacity-90 z-50">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSearch();
+              setSearchAppear(false);
+              setSearch("");
+            }}
+            className="flex justify-center items-center h-full"
+          >
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              type="text"
+              placeholder="Search"
+              className="w-1/2 h-10 rounded-md px-2"
+            />
+
+            <button
+              type="button"
+              onClick={() => setSearchAppear(false)}
+              className="text-gray-400 hover:text-white"
+            >
+              <XMarkIcon className="h-6 w-6" />
+            </button>
+          </form>
+        </div>
+      )}
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
         <div className="relative flex h-16 items-center justify-between">
           <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
@@ -207,6 +268,12 @@ const Navbar = () => {
               </div>
             </div>
           </div>
+
+          <MagnifyingGlassIcon
+            onClick={() => setSearchAppear(true)}
+            className="h-6 w-6 text-gray-400 cursor-pointer"
+          />
+
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
             {session?.user ? (
               <div className="flex">
