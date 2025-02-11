@@ -10,15 +10,23 @@ export async function GET(request) {
       new URL(request.url).searchParams
     );
 
-    const offset = parseInt(page, 10) * 10;
+    const pageNumber = parseInt(page, 10);
+    if (isNaN(pageNumber) || pageNumber < 0) {
+      return NextResponse.json(
+        { error: "Invalid page number" },
+        { status: 400 }
+      );
+    }
+    const offset = pageNumber * 10;
 
     const searchQueryQuery = `
       SELECT * FROM cards 
       WHERE title LIKE ? OR description LIKE ? 
       LIMIT 10 OFFSET ?
     `;
+    console.log(searchQuery);
 
-    const searchResult = await new Promise((resolve, reject) => {
+    const cards = await new Promise((resolve, reject) => {
       db.query(
         searchQueryQuery,
         [`%${searchQuery}%`, `%${searchQuery}%`, offset],
@@ -26,14 +34,42 @@ export async function GET(request) {
       );
     });
 
-    return NextResponse.json({
-      message: "Cards retrieved successfully",
-      searchResult,
+    if (!cards.length) {
+      return NextResponse.json([]);
+    }
+
+    const userIds = cards.map((card) => card.user_id);
+
+    if (!userIds.length) {
+      return NextResponse.json(cards);
+    }
+
+    const placeholders = userIds.map(() => "?").join(",");
+    const getOwnersQuery = `
+      SELECT * FROM users WHERE id IN (${placeholders})
+    `;
+
+    const owners = await new Promise((resolve, reject) => {
+      db.query(getOwnersQuery, userIds, (err, result) => {
+        if (err) reject(err);
+        else resolve(result);
+      });
     });
+
+    const ownersMap = owners.reduce((map, owner) => {
+      map[owner.id] = owner;
+      return map;
+    }, {});
+
+    for (const card of cards) {
+      card.owner = ownersMap[card.user_id];
+    }
+
+    return NextResponse.json(cards);
   } catch (error) {
     console.error("Error in GET request:", error);
     return NextResponse.json(
-      { message: "Error retrieving cards", error: error.message },
+      { error: "Failed to fetch cards", details: error.message },
       { status: 500 }
     );
   }

@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import Card from "../components/card";
 import Loading from "../components/loading";
 import { useSession } from "next-auth/react";
-const Home = ({type}) => {
+const Home = ({type,readyCards}) => {
   const [loading, setLoading] = React.useState(true);
   const [cards, setCards] = React.useState(null);
   const [Favorites, setFavorites] = React.useState([]);
@@ -40,8 +40,16 @@ const Home = ({type}) => {
     };
 
     try {
-      retrieveCards();
-      retrieveFavorites();
+      if(type === "official" && readyCards ){
+        setCards(readyCards);
+      }
+      else if(type==="official" || type==="community"){
+        retrieveCards();
+      }
+      else if(type==="favorites"){
+        retrieveFavorites();
+      }
+
       setLoading(false);
     } catch (error) {
       console.log(error);

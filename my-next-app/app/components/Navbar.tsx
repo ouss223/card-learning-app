@@ -159,37 +159,15 @@ const Navbar = () => {
       console.error("Error:", error);
     }
   };
-  const handleSearch = async () => {
-    try {
-      const response = await fetch(
-        `/api/search?searchQuery=${search}&page=1`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session.user.accessToken}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        console.error("Failed to search");
-        return;
-      }
-
-      console.log("Search success");
-      const data = await response.json();
-      console.log(data);
-      router.push(`/search/${search}`);
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
+  const handleSearch = () =>
+  {
+    router.push(`/search/${search}`);
+  }
 
   return (
     <Disclosure as="nav" className="bg-gray-800 shadow-md relative">
       {searchAppear && (
-        <div className="absolute text-black left-0 top-14 w-full h-full bg-opacity-90 z-50">
+        <div className="absolute text-black  left-0 top-14 w-full h-full bg-opacity-90 z-50">
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -204,13 +182,13 @@ const Navbar = () => {
               onChange={(e) => setSearch(e.target.value)}
               type="text"
               placeholder="Search"
-              className="w-1/2 h-10 rounded-md px-2"
+              className="w-1/2 h-10 border-2 border-gray-400 rounded-md px-2"
             />
 
             <button
               type="button"
               onClick={() => setSearchAppear(false)}
-              className="text-gray-400 hover:text-white"
+              className="text-gray-400 hover:text-black"
             >
               <XMarkIcon className="h-6 w-6" />
             </button>
