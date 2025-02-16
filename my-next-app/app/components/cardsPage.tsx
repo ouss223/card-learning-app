@@ -42,19 +42,18 @@ const Home = ({type,readyCards}) => {
     try {
       if(type === "official" && readyCards ){
         setCards(readyCards);
+        console.log("Ready cards: ", readyCards);
       }
       else if(type==="official" || type==="community"){
         retrieveCards();
       }
-      else if(type==="favorites"){
-        retrieveFavorites();
-      }
+      retrieveFavorites();
 
       setLoading(false);
     } catch (error) {
       console.log(error);
     }
-  }, [session]);
+  }, [session,readyCards]);
 
   return (
     <div>

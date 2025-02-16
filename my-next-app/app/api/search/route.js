@@ -9,6 +9,7 @@ export async function GET(request) {
     const { searchQuery, page } = Object.fromEntries(
       new URL(request.url).searchParams
     );
+    console.log(searchQuery, page);
 
     const pageNumber = parseInt(page, 10);
     if (isNaN(pageNumber) || pageNumber < 0) {
@@ -17,7 +18,7 @@ export async function GET(request) {
         { status: 400 }
       );
     }
-    const offset = pageNumber * 10;
+    const offset = (pageNumber-1) * 10;
 
     const searchQueryQuery = `
       SELECT * FROM cards 

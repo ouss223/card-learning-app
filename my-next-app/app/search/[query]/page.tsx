@@ -30,8 +30,8 @@ const page = () => {
 
         console.log("Search success");
         const data = await response.json();
-        console.log(data);
-        setCards(data.cards);
+        console.log("srearch data : ", data);
+        setCards(data);
       } catch (error) {
         console.error("Error:", error);
       }
@@ -39,8 +39,12 @@ const page = () => {
     handleSearch();
   }, [search]);
 
-  return     <CardsPage type={"official"} readyCards={cards} />
-  ;
+  return (
+    <div>
+      <h1 className="flex items-center justify-center text-black text-3xl mt-10" >Search results for "{search}"</h1>
+      <CardsPage type={"official"} readyCards={cards} />
+    </div>
+  );
 };
 
 export default page;
