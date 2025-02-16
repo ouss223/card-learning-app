@@ -69,6 +69,8 @@ export default function Profile() {
     };
     if (field == "bio" || field == "country" || field == "username") {
       updateField(field);
+      field == "country" && setStats((prev) => ({ ...prev, country: edited }));
+      field == "bio" && setStats((prev) => ({ ...prev, bio: edited }));
     }
   };
 
@@ -210,28 +212,32 @@ export default function Profile() {
                         submit
                       </button>
                     </>
-                  ) : (
-                    ""
-                  )}
-                  {stats?.bio == null && editIndex[4] == false ? (
+                  ) : stats?.bio == null && editIndex[4] === false ? (
                     <button
                       className="bg-black px-2 rounded-full"
                       onClick={() =>
-                        setEditIndex((prev) => prev.map((_, i) => i === 4))
+                        setEditIndex((prev) =>
+                          prev.map((val, i) => (i === 4 ? true : val))
+                        )
                       }
                     >
                       add bio
                     </button>
                   ) : (
-                    <>
-                      {stats?.bio}
-                      <EditIcon
-                        onClick={() =>
-                          setEditIndex((prev) => prev.map((_, i) => i === 4))
-                        }
-                        className="cursor-pointer ml-5"
-                      />
-                    </>
+                    stats?.bio &&
+                    editIndex[4] === false && (
+                      <>
+                        {stats?.bio}
+                        <EditIcon
+                          onClick={() =>
+                            setEditIndex((prev) =>
+                              prev.map((val, i) => (i === 4 ? true : val))
+                            )
+                          }
+                          className="cursor-pointer ml-5"
+                        />
+                      </>
+                    )
                   )}
                 </p>
                 <div className="flex items-center gap-2 text-sm">

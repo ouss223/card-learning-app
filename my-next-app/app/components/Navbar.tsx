@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
+import { useRef } from "react";
 
 import {
   Disclosure,
@@ -26,6 +27,7 @@ import {
 } from "@heroicons/react/24/outline";
 
 const Navbar = () => {
+  const inputRef = useRef(null);
   const [notification, setNotification] = React.useState<boolean | null>(null);
   const { data: session, status } = useSession();
   const [picked, setPicked] = React.useState<boolean>("");
@@ -159,10 +161,9 @@ const Navbar = () => {
       console.error("Error:", error);
     }
   };
-  const handleSearch = () =>
-  {
+  const handleSearch = () => {
     router.push(`/search/${search}`);
-  }
+  };
 
   return (
     <Disclosure as="nav" className="bg-gray-800 shadow-md relative">
@@ -179,6 +180,7 @@ const Navbar = () => {
           >
             <input
               value={search}
+              ref={inputRef}
               onChange={(e) => setSearch(e.target.value)}
               type="text"
               placeholder="Search"
@@ -248,7 +250,11 @@ const Navbar = () => {
           </div>
 
           <MagnifyingGlassIcon
-            onClick={() => setSearchAppear(true)}
+            onClick={() => {
+              setSearchAppear(true);
+              setTimeout(() => {
+                inputRef.current?.focus();
+              }, 0);            }}
             className="h-6 w-6 text-gray-400 cursor-pointer"
           />
 
