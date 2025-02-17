@@ -5,6 +5,7 @@ import { PaperClipIcon } from "@heroicons/react/20/solid";
 import { useSession, updateSession } from "next-auth/react";
 
 import EditIcon from "@mui/icons-material/Edit";
+import InfoIcon from "@mui/icons-material/Info";
 
 //update the other parts later (the ones besides stats)
 export default function Profile() {
@@ -12,6 +13,7 @@ export default function Profile() {
   const [stats, setStats] = React.useState("");
   const [edited, setEdited] = React.useState("");
   const [country, setCountry] = React.useState(null);
+  const [streakInfo, setStreakInfo] = React.useState(false);
   const [editIndex, setEditIndex] = React.useState([
     false,
     false,
@@ -84,7 +86,7 @@ export default function Profile() {
 
   return (
     <div
-      className=" p-8 w-full min-h-screen pt-20"
+      className=" p-8 w-full min-h-screen pt-20 relative"
       style={{
         background: "linear-gradient(145deg, #1e2b3a 0%, #2a3f54 100%)",
         boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
@@ -117,16 +119,16 @@ export default function Profile() {
           ].map((item, idx) => (
             <div
               key={idx}
-              className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0 hover:bg-white/5 transition-colors rounded-lg"
+              className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0 hover:bg-white/5 transition-colors rounded-lg justify-center items-center"
             >
               <dt
-                className="text-sm font-medium"
+                className="text-sm font-medium "
                 style={{ color: "rgba(255,255,255,0.8)" }}
               >
                 {item.label}
               </dt>
               <dd
-                className="mt-1 text-sm sm:col-span-2 sm:mt-0"
+                className="mt-1 text-sm sm:col-span-2 sm:mt-0 flex "
                 style={{ color: "#7fcac9" }}
               >
                 {editIndex[idx] ? (
@@ -169,7 +171,11 @@ export default function Profile() {
                   )
                 ) : (
                   <>
-                    {item.value}{" "}
+                    {
+                      <div className="justify-center text-center flex items-center">
+                        {item.value}
+                      </div>
+                    }{" "}
                     {(idx == 0 || idx == 2) && (
                       <EditIcon
                         onClick={() =>
@@ -177,6 +183,15 @@ export default function Profile() {
                         }
                         className="cursor-pointer ml-5"
                       />
+                    )}
+                    {idx == 3 && (
+                      <div className="flex items-center gap-2">
+                        <img src="/flame.png" className="h-7 w-7 ml-5 " />
+                        <InfoIcon
+                          onClick={() => setStreakInfo(true)}
+                          className=" ml-12 opacity-45 cursor-pointer "
+                        />
+                      </div>
                     )}
                   </>
                 )}
@@ -286,6 +301,69 @@ export default function Profile() {
           </div>
         ))}
       </div>
+      {streakInfo && (
+        <div
+          className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm"
+          style={{ zIndex: 1000 }}
+        >
+          <div
+            className="p-8 rounded-lg"
+            style={{
+              background: "linear-gradient(145deg, #1e2b3a 0%, #2a3f54 100%)",
+              border: "1px solid rgba(127,202,201,0.2)",
+              boxShadow: "0 8px 24px rgba(0,0,0,0.3)",
+            }}
+          >
+            <h3
+              className="text-2xl font-bold mb-6 text-center"
+              style={{ color: "#7fcac9" }}
+            >
+              Streak Milestones
+            </h3>
+            <div className="flex  items-center justify-center gap-8 mt-5">
+              {[
+                { src: "/flame.png", days: "1 Day" },
+                { src: "/flame1.png", days: "7 Days" },
+                { src: "/flame2.png", days: "30 Days" },
+                { src: "/flame3.png", days: "100 Days" },
+              ].map((flame, idx) => (
+                <div key={idx} className="flex flex-col items-center">
+                  <img
+                    src={flame.src}
+                    alt={`${flame.days} streak`}
+                    className="w-12 h-12"
+                  />
+                  <span
+                    className="mt-2 text-sm"
+                    style={{ color: "rgba(255,255,255,0.8)" }}
+                  >
+                    {flame.days}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <p
+              className="mt-6 text-center text-sm max-w-md"
+              style={{ color: "rgba(255,255,255,0.7)" }}
+            >
+              Each flame represents a streak milestone: the first for 1 day, the
+              second for 7 days, the third for 30 days, and the fourth for 100
+              days.
+            </p>
+            <button
+              onClick={() => setStreakInfo(false)}
+              className="mt-6 w-full py-2 rounded-lg text-sm font-medium transition-colors"
+              style={{
+                background: "rgba(127,202,201,0.1)",
+                color: "#7fcac9",
+                border: "1px solid rgba(127,202,201,0.2)",
+              }}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
