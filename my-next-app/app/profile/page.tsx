@@ -4,7 +4,7 @@ import Infos from "../components/Profile_infos";
 const Profile = () => {
   return (
     <div className="w-full ">
-      <Infos />
+      <Infos id= {null}/>
     </div>
   );
 };

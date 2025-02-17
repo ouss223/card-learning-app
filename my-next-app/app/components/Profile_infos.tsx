@@ -8,7 +8,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import InfoIcon from "@mui/icons-material/Info";
 
 //update the other parts later (the ones besides stats)
-export default function Profile() {
+export default function Profile({ id }) {
   const { data: session, update } = useSession();
   const [stats, setStats] = React.useState("");
   const [edited, setEdited] = React.useState("");
@@ -25,16 +25,21 @@ export default function Profile() {
 
   React.useEffect(() => {
     const getStats = async () => {
+      let idd = session?.user?.id;
+      if (id) {
+        idd = id;
+      }
       try {
         if (!session) return;
-        const res = await fetch(`/api/getStats/${session?.user?.id}`);
+        const res = await fetch(`/api/getStats/${idd}`);
         const data = await res.json();
         setStats(data.stats);
-        console.log(data);
+        console.log("here here bro : ", data);
       } catch (err) {
-        console.log(err);
+        console.error(err);
       }
     };
+
     getStats();
   }, [session]);
 
@@ -110,9 +115,9 @@ export default function Profile() {
       >
         <dl className="" style={{ borderColor: "rgba(127,202,201,0.1)" }}>
           {[
-            { label: "Username", value: session?.user?.name },
+            { label: "Username", value: stats?.username },
 
-            { label: "Email address", value: session?.user?.email },
+            { label: "Email address", value: stats?.email },
             { label: "Country", value: stats?.country },
 
             { label: "Learning Streak", value: `${stats?.dailyStreak} days` },
@@ -128,10 +133,10 @@ export default function Profile() {
                 {item.label}
               </dt>
               <dd
-                className="mt-1 text-sm sm:col-span-2 sm:mt-0 flex "
+                className="mt-1 text-sm sm:col-span-2 sm:mt-0 flex"
                 style={{ color: "#7fcac9" }}
               >
-                {editIndex[idx] ? (
+                {editIndex[idx] && !id ? (
                   idx === 2 ? (
                     <div className="flex items-center gap-2">
                       <select
@@ -152,7 +157,7 @@ export default function Profile() {
                         submit
                       </button>
                     </div>
-                  ) : (
+                  ) : id ? ( // Fixed conditional rendering for `id`
                     <div className="flex items-center gap-2">
                       <input
                         onChange={(e) => setEdited(e.target.value)}
@@ -168,28 +173,28 @@ export default function Profile() {
                         submit
                       </button>
                     </div>
-                  )
+                  ) : null
                 ) : (
                   <>
-                    {
-                      <div className="justify-center text-center flex items-center">
-                        {item.value}
-                      </div>
-                    }{" "}
-                    {(idx == 0 || idx == 2) && (
+                    <div className="justify-center text-center flex items-center">
+                      {item.value}
+                    </div>
+                    {(idx === 0 || idx === 2) && !id && (
                       <EditIcon
                         onClick={() =>
-                          setEditIndex((prev) => prev.map((_, i) => i === idx))
+                          setEditIndex((prev) =>
+                            prev.map((_, i) => (i === idx ? true : false))
+                          )
                         }
                         className="cursor-pointer ml-5"
                       />
                     )}
-                    {idx == 3 && (
+                    {idx === 3 && (
                       <div className="flex items-center gap-2">
-                        <img src="/flame.png" className="h-7 w-7 ml-5 " />
+                        <img src="/flame.png" className="h-7 w-7 ml-5" />
                         <InfoIcon
                           onClick={() => setStreakInfo(true)}
-                          className=" ml-12 opacity-45 cursor-pointer "
+                          className="ml-12 opacity-45 cursor-pointer"
                         />
                       </div>
                     )}
@@ -212,7 +217,7 @@ export default function Profile() {
             >
               <div className="space-y-4">
                 <p>
-                  {editIndex[4] ? (
+                  {editIndex[4] && !id ? (
                     <>
                       <textarea
                         className="w-full h-20 text-black p-2 rounded-lg"
@@ -227,7 +232,7 @@ export default function Profile() {
                         submit
                       </button>
                     </>
-                  ) : stats?.bio == null && editIndex[4] === false ? (
+                  ) : stats?.bio == null && editIndex[4] === false && !id ? (
                     <button
                       className="bg-black px-2 rounded-full"
                       onClick={() =>
@@ -240,6 +245,7 @@ export default function Profile() {
                     </button>
                   ) : (
                     stats?.bio &&
+                    !id &&
                     editIndex[4] === false && (
                       <>
                         {stats?.bio}

@@ -58,7 +58,7 @@ export async function GET(request, { params }) {
     });
     const countryBio = await new Promise((resolve, reject) => {
       db.query(
-        `SELECT country, bio FROM users WHERE id = ?`,
+        `SELECT country, bio,username,email FROM users WHERE id = ?`,
         [userId],
         (err, result) =>
           err ? reject(err) : resolve(result[0] || { country: "", bio: "" })
@@ -74,6 +74,8 @@ export async function GET(request, { params }) {
         xp,
         country: countryBio.country,
         bio: countryBio.bio,
+        username: countryBio.username,
+        email: countryBio.email,
       },
     });
   } catch (error) {

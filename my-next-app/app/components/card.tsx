@@ -6,6 +6,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import IconButton from "@mui/material/IconButton";
 import { useSession } from "next-auth/react";
 import Edit from "../cardAdd/page";
+import { useRouter } from "next/navigation";
 interface CardProps {
   data: {
     title: string;
@@ -25,6 +26,7 @@ const Card: React.FC<CardProps> = ({
 }) => {
   const [isFavorited, setIsFavorited] = useState(isfavorited);
   const { data: session } = useSession();
+  const router = useRouter();
   useEffect(() => {
     setIsFavorited(isfavorited);
   }, [isfavorited]);
@@ -209,6 +211,8 @@ const Card: React.FC<CardProps> = ({
       >
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <img
+          className="cursor-pointer"
+            onClick={() => router.push(`/profile/${data.owner.id}`)}
             width={40}
             height={40}
             src={data?.owner?.image ? data?.owner?.image : "/avatar.jpeg"}
