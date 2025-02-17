@@ -203,16 +203,18 @@ const Card: React.FC<CardProps> = ({
         </div>
       </div>
       <div
+      
         style={{
+          
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <div className="cursor-pointer"
+      onClick={() => router.push(`/profile/${data.owner.id}`)} style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <img
-          className="cursor-pointer"
-            onClick={() => router.push(`/profile/${data.owner.id}`)}
+          
             width={40}
             height={40}
             src={data?.owner?.image ? data?.owner?.image : "/avatar.jpeg"}
