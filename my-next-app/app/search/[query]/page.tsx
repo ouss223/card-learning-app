@@ -7,7 +7,7 @@ import CardsPage from "../../components/cardsPage";
 const page = () => {
   const search = useParams().query;
   const { data: session, status } = useSession();
-  const [cards, setCards] = useState([]);
+  const [cards, setCards] = useState([false]);
 
   useEffect(() => {
     const handleSearch = async () => {
@@ -38,6 +38,8 @@ const page = () => {
     };
     handleSearch();
   }, [search]);
+  
+  
 
   return (
     <div>

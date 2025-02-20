@@ -1,76 +1,82 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import Card from "../components/card";
 import Loading from "../components/loading";
 import { useSession } from "next-auth/react";
-const Home = ({type,readyCards}) => {
-  const [loading, setLoading] = React.useState(true);
-  const [cards, setCards] = React.useState(null);
-  const [Favorites, setFavorites] = React.useState([]);
+
+const Home = ({ type, readyCards }) => {
+  const [loading, setLoading] = useState(true);
+  const [cards, setCards] = useState(null);
+  const [Favorites, setFavorites] = useState([]);
   const { data: session } = useSession();
 
   useEffect(() => {
+    if (!session) return; // Prevent fetching before session exists
+
     const retrieveCards = async () => {
-      const res = await fetch(`http://localhost:3000/api/getCards/type/${type}`, {
-        method: "GET",
-        headers: {
-          authorization: `Bearer ${session?.user?.accessToken}`,
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await res.json();
-      setCards(data);
+      try {
+        const res = await fetch(`http://localhost:3000/api/getCards/type/${type}`, {
+          method: "GET",
+          headers: {
+            authorization: `Bearer ${session?.user?.accessToken}`,
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await res.json();
+        setCards(data);
+        console.log("Cards:", data);
+      } catch (error) {
+        console.error("Error fetching cards:", error);
+      }
     };
+
     const retrieveFavorites = async () => {
-      const res = await fetch(`http://localhost:3000/api/getFavorites`, {
-        method: "GET",
-        headers: {
-          authorization: `Bearer ${session?.user?.accessToken}`,
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await res.json();
-      console.log(data);
-      setFavorites(() => {
-        console.log("Updated favorites:", data.favorites);
-        return data.favorites;
-      });
-      console.log(Favorites);
+      try {
+        const res = await fetch("http://localhost:3000/api/getFavorites", {
+          method: "GET",
+          headers: {
+            authorization: `Bearer ${session?.user?.accessToken}`,
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await res.json();
+        setFavorites(data.favorites || []);
+      } catch (error) {
+        console.error("Error fetching favorites:", error);
+      }
     };
 
-    try {
-      if(type === "official" && readyCards ){
-        setCards(readyCards);
-        console.log("Ready cards: ", readyCards);
-      }
-      else if(type==="official" || type==="community"){
-        retrieveCards();
-      }
-      retrieveFavorites();
-
-      setLoading(false);
-    } catch (error) {
-      console.log(error);
+    if (type === "official" && readyCards) {
+      setCards(readyCards);
+    } else if (type === "official" || type === "community") {
+      retrieveCards();
     }
-  }, [session,readyCards]);
+    retrieveFavorites();
+    setLoading(false);
+    
+  }, [session, readyCards]);
+
+  useEffect(() => {
+    console.log("Updated favorites:", Favorites);
+  }, [Favorites]);
 
   return (
     <div>
-      {loading || !cards || !Favorites ? (
+      {loading || !cards ? (
         <Loading />
+      ) :(readyCards && readyCards[0]==false) || cards?.length === 0   ? (
+        <div className="mx-auto flex items-center justify-center flex-col "> 
+          <h1 className="text-black mt-8 mb-[100px] text-5xl alegreya-bold">
+            Unfortunately, there are no items at the moment.
+          </h1>
+          <Image src="/sad.svg" width={500} height={500} alt="Sad face" />
+        </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3  xl:grid-cols-4 gap-4 p-4 px-12 pt-12">
-          {Array.from({ length: cards.length }).map((_, index) => (
-            <Card
-              key={index}
-              delete_item={false}
-              data={cards[index]}
-              isfavorited={() => {
-                console.log(Favorites);
-                return Favorites.includes(cards[index].id);
-              }}
-            />
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4 px-12 pt-12">
+          {cards.map((card, index) => (
+            <Card key={index} delete_item={false} data={card} isfavorited={() => Favorites.includes(card.id)} />
           ))}
         </div>
       )}
